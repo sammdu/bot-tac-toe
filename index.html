@@ -5,8 +5,11 @@
     <title>Bot-Tac-Toe | AI Supercharged Tic Tac Toe Game</title>
     <link rel="stylesheet" href="minireset.min.css">
     <link rel="stylesheet" href="style.css">
+    <style id="table_adjustments"></style>
+    <script type="text/javascript" src="./brython.js">
+    </script>
 </head>
-<body>
+<body onload="brython()">
     <main>
         <div class="container">
             <header>
@@ -17,37 +20,28 @@
             <section>
                 <div class="board-area">
                     <div class="game-status">
-                        Game Loading
+                        <span id="game_status">Game Loading</span>
                     </div>
-                    <table class="board">
+                    <table class="board" id="board">
                         <tr>
-                            <td><span class="cell">x</span></td>
-                            <td><span class="cell">o</span></td>
-                            <td><span class="cell">x</span></td>
-                            <td><span class="cell">o</span></td>
+                            <td><span class="cell"></span></td>
+                            <td><span class="cell"></span></td>
+                            <td><span class="cell"></span></td>
                         </tr>
                         <tr>
-                            <td><span class="cell">o</span></td>
-                            <td><span class="cell">x</span></td>
-                            <td><span class="cell">o</span></td>
-                            <td><span class="cell">x</span></td>
+                            <td><span class="cell"></span></td>
+                            <td><span class="cell"></span></td>
+                            <td><span class="cell"></span></td>
                         </tr>
                         <tr>
-                            <td><span class="cell">x</span></td>
-                            <td><span class="cell">o</span></td>
-                            <td><span class="cell">x</span></td>
-                            <td><span class="cell">o</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="cell">o</span></td>
-                            <td><span class="cell">x</span></td>
-                            <td><span class="cell">o</span></td>
-                            <td><span class="cell">x</span></td>
+                            <td><span class="cell"></span></td>
+                            <td><span class="cell"></span></td>
+                            <td><span class="cell"></span></td>
                         </tr>
                     </table>
                     <div class="game-start-stop">
                         <button type="button" class="btn-sq" id="btn_start" name="start">Start</button>
-                        <button type="button" class="btn-sq" id="btn_reset" name="reset">Reset</button>
+                        <button type="button" class="btn-sq" id="btn_reset" name="reset" style="display: none;">Reset</button>
                     </div>
                 </div>
                 <aside>
@@ -72,8 +66,7 @@
                     <ul class="ul-start-first">
                         <li><button type="button" class="btn-sq" id="" name="st_rand">Random Draw</button></li>
                         <span>
-                            <li><button type="button" class="btn-sq" id="" name="st_p1" style="background-color: #22263f;">Player 1</button></li>
-                            <li><button type="button" class="btn-sq" id="" name="st_p2">Player 2</button></li>
+                            <li><button type="button" class="btn-sq" id="" name="st_p1" style="background-color: #22263f;">Player 1</button></li><li><button type="button" class="btn-sq" id="" name="st_p2">Player 2</button></li>
                         </span>
                     </ul>
                     <h5>Player 2 role:</h5>
@@ -92,5 +85,7 @@
         <!-- <br> -->
         <h4>With Brython — Python in the browser!</h4>
     </footer>
+
+    <script type="text/python" src="interaction.py"></script>
 </body>
 </html>
