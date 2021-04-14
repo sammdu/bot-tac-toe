@@ -63,11 +63,70 @@ section
 .board-area
 {
     background-color: #8f17ee;
-    height: 20em;
-    width: 20em;
-
-    flex: 3 0 auto;
+    padding: 1em 0;
+    flex: 3 0 50%;
 }
+
+.board-area .game-status
+{
+    margin-bottom: 1em;
+}
+
+.board-area .game-start-stop
+{
+    margin-top: 1em;
+}
+
+/* [START] table styling */
+table
+{
+    width: 90%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+table td
+{
+    border: 0.2em solid #1a1a1a;
+    text-align: center;
+    width: 22.5%;  /* vary based on cell number per side, by 90/n */
+    position:relative;
+}
+td:after{
+    content:'';
+    display:block;
+    margin-top:100%;
+}
+td .cell
+{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+}
+
+table tr:first-child td
+{
+    border-top: 0;
+}
+table tr:last-child td
+{
+    border-bottom: 0;
+}
+table tr td:first-child
+{
+    border-left: 0;
+}
+table tr td:last-child
+{
+    border-right: 0;
+}
+/* [END] table styling */
 
 aside
 {
@@ -75,7 +134,7 @@ aside
     height: 15em;
     width: 15em;
 
-    flex: 1 0 auto;
+    flex: 1 1 auto;
 }
 
 footer
@@ -95,12 +154,12 @@ footer h3
 {
     font-weight: bold;
     font-size: 1.5em;
-    line-height: 0.8em;
+    /* line-height: 0.8em; */
 }
 
 footer h4
 {
     font-weight: 500;
     font-size: 1em;
-    line-height: 0.8em;
+    /* line-height: 1em; */
 }
