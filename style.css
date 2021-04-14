@@ -19,16 +19,22 @@ body
 main
 {
     background-color: #cccccc;
-    overflow-y: scroll;
-    margin: 1em;
+    overflow: scroll;
+    padding: 1em;
 
     flex: 3 1 auto;
-    align-self: center;
+    /* align-self: center; */
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
+}
+
+.container
+{
+    background-color: #1d2124;
+    flex: 0 0;
 }
 
 header
@@ -47,10 +53,6 @@ header h1
 
 section
 {
-    background-color: #1d2124;
-
-    flex: 0 0;
-
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -58,7 +60,7 @@ section
     flex-wrap: wrap-reverse;
 }
 
-.board
+.board-area
 {
     background-color: #8f17ee;
     height: 20em;
@@ -82,7 +84,7 @@ footer
     color: #fff;
 
     text-align: center;
-    min-height: 3em;
+    /* min-height: 3em; */
     padding: 1em;
 
     flex-grow: 0;
@@ -92,5 +94,13 @@ footer
 footer h3
 {
     font-weight: bold;
-    font-size: 2em;
+    font-size: 1.5em;
+    line-height: 0.8em;
+}
+
+footer h4
+{
+    font-weight: 500;
+    font-size: 1em;
+    line-height: 0.8em;
 }
