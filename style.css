@@ -18,12 +18,11 @@ body
 
 main
 {
-    background-color: #cccccc;
     overflow: scroll;
+    /* min-height: 0; */
     padding: 1em;
 
     flex: 3 1 auto;
-    /* align-self: center; */
 
     display: flex;
     flex-direction: column;
@@ -33,16 +32,23 @@ main
 
 .container
 {
-    background-color: #1d2124;
+    height: 100%;
     flex: 0 0;
 }
 
 header
 {
-    background-color: #a9eee1;
+    min-height: 0;
     margin: 1em 0;
 
     flex: 0 0;
+}
+@media screen and (min-width: 1024px)
+{
+    header
+    {
+        margin-left: 10vw;
+    }
 }
 
 header h1
@@ -62,19 +68,25 @@ section
 
 .board-area
 {
-    background-color: #8f17ee;
+    background-color: #f1f1f1;
     padding: 1em 0;
-    flex: 3 0 50%;
+    flex: 3 0 60%;
 }
 
 .board-area .game-status
 {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
     margin-bottom: 1em;
 }
 
 .board-area .game-start-stop
 {
     margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* [START] table styling */
@@ -86,11 +98,28 @@ table
 }
 table td
 {
-    border: 0.2em solid #1a1a1a;
+    border: 0.2em solid #22263f;
     text-align: center;
     width: 22.5%;  /* vary based on cell number per side, by 90/n */
     position:relative;
 }
+@media screen and (min-width: 1024px)
+{
+    table
+    {
+        width: 60%;
+        /* border-collapse: collapse;
+        margin: 0 auto; */
+    }
+    table td
+    {
+        /* border: 0.2em solid #22263f;
+        text-align: center; */
+        width: 15%;  /* vary based on cell number per side, by 60/n */
+        /* position:relative; */
+    }
+}
+
 td:after{
     content:'';
     display:block;
@@ -130,11 +159,96 @@ table tr td:last-child
 
 aside
 {
-    background-color: #ffd945;
-    height: 15em;
-    width: 15em;
+    background-color: #fffbed;
+    padding: 0 1em 1em 1em;
 
-    flex: 1 1 auto;
+    flex: 1 4 40%;
+}
+aside h5
+{
+    color: #22263f;
+    font-weight: bold;
+    line-height: 1.5em;
+    white-space: nowrap;
+    padding: 0.5em 0;
+    margin-top: 0.5em;
+}
+.ul-start-first
+{
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin-top: -0.5em;
+}
+.ul-start-first li
+{
+    margin-top: 0.5em;
+}
+
+li
+{
+    display: inline-block;
+}
+
+button
+{
+    background-color: #7399c6;
+    border: none;
+    margin-right: 0.5em;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.05s ease;
+}
+button:hover
+{
+    -webkit-box-shadow: 0 0.1em 0.3em 0 rgba(26,26,26,0.5);
+    box-shadow: 0 0.1em 0.3em 0 rgba(26,26,26,0.5);
+    transform: scale(1.05);
+
+}
+button:active
+{
+    background-color: #22263f;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    transform: scale(1);
+}
+
+button.btn-sq
+{
+    padding: 0.5em 0.8em;
+}
+button.btn-rad
+{
+    width: 2.1em;
+    height: 2.1em;
+    border-radius: 50%;
+}
+
+aside select
+{
+    background-color: #22263f;
+    position: relative;
+    padding: 0.5em 1.8em 0.5em 0.5em;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    background-image: url("./icon_dropdown.svg");
+    background-repeat: no-repeat;
+    background-position: right .7em top 55%, 0 0;
+    background-size: 1em auto, 100%;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.05s ease;
+}
+aside select:hover
+{
+    background-color: #7399c6;
 }
 
 footer
@@ -143,7 +257,6 @@ footer
     color: #fff;
 
     text-align: center;
-    /* min-height: 3em; */
     padding: 1em;
 
     flex-grow: 0;
@@ -154,12 +267,10 @@ footer h3
 {
     font-weight: bold;
     font-size: 1.5em;
-    /* line-height: 0.8em; */
 }
 
 footer h4
 {
     font-weight: 500;
     font-size: 1em;
-    /* line-height: 1em; */
 }
