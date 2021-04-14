@@ -1,13 +1,12 @@
 @font-face {
-  font-family: 'TTTPiece';
-  src:  url('TTTPiece.eot?r8pxat');
-  src:  url('TTTPiece.eot?r8pxat#iefix') format('embedded-opentype'),
+    font-family: 'TTTPiece';
+    src:  url('TTTPiece.eot?r8pxat');
+    src:  url('TTTPiece.eot?r8pxat#iefix') format('embedded-opentype'),
     url('TTTPiece.ttf?r8pxat') format('truetype'),
     url('TTTPiece.woff?r8pxat') format('woff'),
     url('TTTPiece.svg?r8pxat#TTTPiece') format('svg');
-  font-weight: normal;
-  font-style: normal;
-  /* font-display: block; */
+    font-weight: normal;
+    font-style: normal;
 }
 
 html{
@@ -21,11 +20,16 @@ body
     margin: 0;
 
     font-family: 'HK Grotesk';
+    font-size: 1.1em;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
+}
+@media screen and (min-width: 1500px)
+{
+    body{font-size: 1.3em;}
 }
 
 main
@@ -57,10 +61,11 @@ header
 }
 @media screen and (min-width: 1024px)
 {
-    header
-    {
-        margin-left: 10vw;
-    }
+    header{margin-left: 10vw;}
+}
+@media screen and (min-width: 1500px)
+{
+    header{margin-left: 14vw;}
 }
 
 header h1
@@ -80,7 +85,7 @@ section
 
 .board-area
 {
-    background-color: #f1f1f1;
+    /* background-color: #f1f1f1; */
     padding: 1em 0;
     flex: 3 0 60%;
 }
@@ -107,29 +112,28 @@ table
     width: 90%;
     border-collapse: collapse;
     margin: 0 auto;
+    font-family: 'TTTPiece' !important;
+    font-size: 350%;
+    font-style: normal;
+    padding: 0;
+    line-height: 1;
 }
 table td
 {
-    border: 0.2em solid #22263f;
+    border: 0.08em solid #22263f;
     text-align: center;
     width: 22.5%;  /* vary based on cell number per side, by 90/n */
     position:relative;
 }
 @media screen and (min-width: 1024px)
 {
-    table
-    {
-        width: 60%;
-        /* border-collapse: collapse;
-        margin: 0 auto; */
-    }
-    table td
-    {
-        /* border: 0.2em solid #22263f;
-        text-align: center; */
-        width: 15%;  /* vary based on cell number per side, by 60/n */
-        /* position:relative; */
-    }
+    table{width: 60%;}
+    table td{width: 15%;}  /* vary based on cell number per side, by 60/n */
+}
+@media screen and (min-width: 1500px)
+{
+    table{width: 50%;}
+    table td{width: 12.5%;}  /* vary based on cell number per side, by 50/n */
 }
 
 td:after{
@@ -171,7 +175,7 @@ table tr td:last-child
 
 aside
 {
-    background-color: #fffbed;
+    /* background-color: #fffbed; */
     padding: 0 1em 1em 1em;
 
     flex: 1 4 40%;
@@ -210,8 +214,13 @@ button
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-weight: 500;
+    font-family: inherit;
+    font-weight: 600;
     transition: all 0.05s ease;
+}
+@media screen and (min-width: 1500px)
+{
+    button{font-size: 1em;}
 }
 button:hover
 {
@@ -252,6 +261,7 @@ button.btn-piece:hover
 {
     -webkit-box-shadow: none;
     box-shadow: none;
+    text-shadow: 0 0.05em 0.1em rgba(26,26,26,0.5);
 }
 button.btn-piece:active
 {
@@ -270,14 +280,19 @@ aside select
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-weight: 500;
+    font-family: inherit;
+    font-weight: 600;
     background-image: url("./icon_dropdown.svg");
     background-repeat: no-repeat;
-    background-position: right .7em top 55%, 0 0;
+    background-position: right .5em top 55%, 0 0;
     background-size: 1em auto, 100%;
     -moz-appearance: none;
     -webkit-appearance: none;
     transition: all 0.05s ease;
+}
+@media screen and (min-width: 1500px)
+{
+    aside select{font-size: 1em;}
 }
 aside select:hover
 {
