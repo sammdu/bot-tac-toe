@@ -20,7 +20,7 @@ body
     margin: 0;
 
     font-family: 'HK Grotesk';
-    font-size: 1.1em;
+    font-size: 1.2em;
 
     display: flex;
     flex-direction: column;
@@ -37,6 +37,7 @@ main
     overflow: scroll;
     /* min-height: 0; */
     padding: 1em;
+    /* margin-left: -2em; */
 
     flex: 3 1 auto;
 
@@ -78,7 +79,7 @@ section
 {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-end;
     flex-wrap: wrap-reverse;
 }
@@ -88,6 +89,10 @@ section
     /* background-color: #f1f1f1; */
     padding: 1em 0;
     flex: 3 0 60%;
+}
+@media screen and (max-width: 980px)
+{
+    .board-area{margin-left: 1em; margin-right: 1em;}
 }
 
 .board-area .game-status
@@ -182,7 +187,7 @@ aside
 {
     /* background-color: #fffbed; */
     padding: 0 1em 1em 1em;
-
+    /* max-width: 60%; */
     flex: 1 1 40%;
 }
 aside h5
@@ -240,6 +245,13 @@ button:active
     -webkit-box-shadow: none;
     box-shadow: none;
     transform: scale(1);
+}
+
+.btn-dis, .btn-dis:hover, .btn-dis:active
+{
+    background-color: #b0b0b0;
+    box-shadow: none;
+    transform: none;
 }
 
 button.btn-sq

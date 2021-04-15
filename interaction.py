@@ -88,7 +88,8 @@ def switch_selection(
 
     # clear background color for all buttons in the `button_class`
     for b in dom.select(button_class):
-        b.attrs["style"] = f"{colortype}: {ThemeColor.unsel};"
+        if b.name != selected.name:
+            b.attrs["style"] = ""
 
     # darken `selected` button's background color
     selected.attrs["style"] = f"{colortype}: {ThemeColor.sel};"
@@ -99,7 +100,18 @@ def disable_button(button: html.BUTTON) -> None:
     helper function to disable a specific button and set its style to show the
     disabled state
     """
-    pass
+    button.attrs["style"] = ""
+    button.classList.add("btn-dis")
+    button.disabled = True
+
+
+def enable_button(button: html.BUTTON) -> None:
+    """
+    helper function to disable a specific button and set its style to show the
+    disabled state
+    """
+    button.classList.remove("btn-dis")
+    button.disabled = False
 
 
 def ev_board_size(event: DOMEvent) -> None:
@@ -114,6 +126,17 @@ def ev_board_size(event: DOMEvent) -> None:
     # grab new side length and redraw board
     new_side_len = int(target.name[-1])
     draw_board(dom['board'], new_side_len)
+
+    # disable or enable winning step buttons as necessary
+    for b in dom.select('.btn-win'):
+        if int(b.name[-1]) > new_side_len:
+            disable_button(b)
+        elif int(b.name[-1]) == new_side_len:
+            enable_button(b)
+            b.attrs["style"] = f"background-color: {ThemeColor.sel};"
+        else:
+            enable_button(b)
+            b.attrs["style"] = f"background-color: {ThemeColor.unsel};"
 
     # log the change in the broswer console
     print(f"Changed board side length to: {new_side_len}")
