@@ -32,8 +32,6 @@ from browser import html, DOMEvent
 WINNING_STEP_LEN = 3
 PLAYER_1_PIECE = 'x'
 
-game_status_text = dom['game_status']
-
 
 class ThemeColor:
     """
@@ -57,7 +55,7 @@ def draw_board(table: html.TABLE, side: int) -> None:
         for j in range(side):
             td = html.TD(html.SPAN(Class="cell"))
             tr.append(td)
-        board.attach(tr)
+        table.attach(tr)
 
     # set table cell size according to side length
     dom["table_adjustments"].text = f"""
@@ -104,7 +102,7 @@ def ev_change_board_size(event: DOMEvent) -> None:
 
     # grab new side length and redraw board
     new_side_len = int(target.name[-1])
-    draw_board(board, new_side_len)
+    draw_board(dom['board'], new_side_len)
 
     # log the change in the broswer console
     print(f"Changed board side length to: {new_side_len}")
@@ -155,7 +153,7 @@ if __name__ == '__main__':
     draw_board(dom['board'], 3)
 
     # indicate that the game is ready
-    game_status_text.html = """
+    dom['game_status'].html = """
     Please select your options,
     <span style="display: inline-block;">and start the game below!</span>
     """
