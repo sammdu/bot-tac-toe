@@ -31,6 +31,8 @@ from browser import html, DOMEvent
 # GLOBAL VARIABLES
 WINNING_STEP_LEN = 3
 PLAYER_1_PIECE = 'x'
+START_FIRST = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
+PLAYER_2_ROLE = "another_human"
 
 
 class ThemeColor:
@@ -91,7 +93,7 @@ def switch_selection(
     selected.attrs["style"] = f"{colortype}: {ThemeColor.sel};"
 
 
-def ev_change_board_size(event: DOMEvent) -> None:
+def ev_board_size(event: DOMEvent) -> None:
     """
     change the board size based on the given button event
     """
@@ -108,42 +110,81 @@ def ev_change_board_size(event: DOMEvent) -> None:
     print(f"Changed board side length to: {new_side_len}")
 
 
-def ev_change_win_step(event: DOMEvent) -> None:
+def ev_win_step(event: DOMEvent) -> None:
     """
     change the number of steps required to win the game based on the
     given button event
+    write the result into the global variable `WINNING_STEP_LEN`
     """
+    global WINNING_STEP_LEN
     target = event.target
 
     # change the button colors to reflect user selection
     switch_selection(target, ".btn-win")
 
     # grab new winning length and set the global variable
-    new_win_len = int(target.name[-1])
-    global WINNING_STEP_LEN
-    WINNING_STEP_LEN = new_win_len
+    WINNING_STEP_LEN = int(target.name[-1])
 
     # log the change in the broswer console
     print(f"Set winning step length to: {WINNING_STEP_LEN}")
 
 
-def ev_change_player1_piece(event: DOMEvent) -> None:
+def ev_player1_piece(event: DOMEvent) -> None:
     """
     change the game piece (x/o) used by player 1 based on the given
     button event
+    write the result into the global variable `PLAYER_1_PIECE`
     """
+    global PLAYER_1_PIECE
     target = event.target
 
     # change the button colors to reflect user selection
     switch_selection(target, ".btn-piece", colortype="color")
 
-    # grab new winning length and set the global variable
-    new_player1_piece = target.name[-1]
-    global PLAYER_1_PIECE
-    PLAYER_1_PIECE = new_player1_piece
+    # grab new player 1 game piece and set the global variable
+    PLAYER_1_PIECE = target.name[-1]
 
     # log the change in the broswer console
     print(f"Changed Player 1's game piece to: {PLAYER_1_PIECE}")
+
+
+def ev_who_starts_first(event: DOMEvent) -> None:
+    """
+    change the whether player 1 or player 2 starts first, or determine
+    by a random draw, based on the given button event
+    write the result into the global variable `START_FIRST`
+    """
+    global START_FIRST
+    target = event.target
+
+    # change the button colors to reflect user selection
+    switch_selection(target, ".btn-st")
+
+    # grab new starting player and set the global variable
+    START_FIRST = target.name[-2:]
+
+    # log the change in the broswer console
+    print(f"Player {START_FIRST} will start first.")
+
+
+def ev_player_2_role(event: DOMEvent) -> None:
+    """
+    change the role of player 2, between `another_human`, `ai_random`, `ai_easy`,
+    and `ai_hard`
+    write the result into the global variable `.`
+    """
+    global PLAYER_2_ROLE
+    target = event.target
+
+    # find the selected option
+    selected = [option.value for option in target if option.selected]
+    print(selected)
+
+    # grab new starting player and set the global variable
+    PLAYER_2_ROLE = selected[0]
+
+    # log the change in the broswer console
+    # print(f"Player {START_FIRST} will start first.")
 
 
 if __name__ == '__main__':
@@ -158,14 +199,16 @@ if __name__ == '__main__':
     <span style="display: inline-block;">and start the game below!</span>
     """
 
+    # enforce a deafult value for the player 2 role select menu
+    dom["player_2_role"].value = PLAYER_2_ROLE
+
     # bind functions to buttons
     for b in dom.select('.btn-len'):
-        b.bind("click", ev_change_board_size)
+        b.bind("click", ev_board_size)
     for b in dom.select('.btn-win'):
-        b.bind("click", ev_change_win_step)
+        b.bind("click", ev_win_step)
     for b in dom.select('.btn-piece'):
-        b.bind("click", ev_change_player1_piece)
+        b.bind("click", ev_player1_piece)
     for b in dom.select('.btn-st'):
-        pass
-
-    # dom.select('#game_status')[0].text = "Haha"
+        b.bind("click", ev_who_starts_first)
+    dom["player_2_role"].bind("change", ev_player_2_role)
