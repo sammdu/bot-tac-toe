@@ -28,12 +28,6 @@ from browser import document as dom
 from browser import html, DOMEvent
 from tictactoe import heyo
 
-# GLOBAL VARIABLES
-WINNING_STEP_LEN = 3
-PLAYER_1_PIECE = 'x'
-START_FIRST = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
-PLAYER_2_ROLE = "another_human"
-
 
 class ThemeColor:
     """
@@ -48,6 +42,15 @@ class ThemeColor:
     disabled: str = "#b0b0b0"
 
 
+# GLOBAL VARIABLES
+WINNING_STEP_LEN = 3
+PLAYER_1_PIECE = 'x'
+START_FIRST = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
+PLAYER_2_ROLE = "another_human"
+PLAYER_1_COLOR = ThemeColor.purple
+PLAYER_2_COLOR = ThemeColor.orange
+
+
 def draw_board(table: html.TABLE, side: int) -> None:
     """
     draw the game board of a given side-length onto te given `html.TABLE`
@@ -56,7 +59,7 @@ def draw_board(table: html.TABLE, side: int) -> None:
     for i in range(side):
         tr = html.TR()
         for j in range(side):
-            td = html.TD(html.SPAN(Class="cell"))
+            td = html.TD(html.SPAN(Class="cell", name=f"{i}{j}"))
             tr.append(td)
         table.attach(tr)
 
@@ -138,6 +141,9 @@ def ev_board_size(event: DOMEvent) -> None:
             enable_button(b)
             b.attrs["style"] = f"background-color: {ThemeColor.unsel};"
 
+    # bind cell functions for each cell
+    bind_cells()
+
     # log the change in the broswer console
     print(f"Changed board side length to: {new_side_len}")
 
@@ -203,9 +209,12 @@ def ev_player_2_role(event: DOMEvent) -> None:
     """
     change the role of player 2, between `another_human`, `ai_random`, `ai_easy`,
     and `ai_hard`
-    write the result into the global variable `.`
+    write the result into the global variable `PLAYER_2_ROLE`
+    also adjust `PLAYER_2_COLOR` to be green if player 2 is an AI, or orange if
+    player 2 is a human
     """
     global PLAYER_2_ROLE
+    global PLAYER_2_COLOR
     target = event.target
 
     # find the selected option
@@ -214,8 +223,42 @@ def ev_player_2_role(event: DOMEvent) -> None:
     # grab new starting player and set the global variable
     PLAYER_2_ROLE = selected[0]
 
+    # change game piece color depending on player 2's role
+    if PLAYER_2_ROLE[:2] == "ai":
+        PLAYER_2_COLOR = ThemeColor.green
+    else:
+        PLAYER_2_COLOR = ThemeColor.orange
+
     # log the change in the broswer console
     print(f"Player 2 will be {PLAYER_2_ROLE}")
+
+
+def bind_cells() -> None:
+    for c in dom.select('.cell'):
+        c.bind("mouseover", cell_hover)
+        c.bind("mouseout", cell_unhover)
+        c.bind("click", cell_click)
+
+
+def cell_hover(event: DOMEvent) -> None:
+    target = event.target
+    # print(f"hover {target.attrs['name']}")
+    target.text = PLAYER_1_PIECE
+
+
+def cell_unhover(event: DOMEvent) -> None:
+    target = event.target
+    # print(f"hover {target.attrs['name']}")
+    target.text = ''
+
+
+def cell_click(event: DOMEvent) -> None:
+    target = event.target
+    # print(f"click {target.attrs['name']}")
+    target.text = PLAYER_1_PIECE
+    target.unbind("mouseout", cell_unhover)
+    target.unbind("mouseover", cell_hover)
+    target.attrs["style"] = f"color: {PLAYER_1_COLOR};"
 
 
 if __name__ == '__main__':
@@ -244,3 +287,6 @@ if __name__ == '__main__':
     for b in dom.select('.btn-st'):
         b.bind("click", ev_who_starts_first)
     dom["player_2_role"].bind("change", ev_player_2_role)
+
+    # bind trigger functions for each cell
+    bind_cells()

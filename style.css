@@ -183,6 +183,15 @@ table tr td:last-child
 }
 /* [END] table styling */
 
+.cell
+{
+    color: inherit;
+}
+.cell:hover
+{
+    color: #b0b0b0;
+}
+
 aside
 {
     /* background-color: #fffbed; */
