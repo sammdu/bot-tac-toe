@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="minireset.min.css">
     <link rel="stylesheet" href="style.css">
     <style id="table_adjustments"></style>
-    <script type="text/javascript" src="./brython.js">
-    </script>
+    <script type="text/javascript" src="./brython.js"></script>
+    <script type="text/javascript" src="./brython_stdlib.js"></script>
 </head>
 <body onload="brython()">
     <main>
@@ -20,7 +20,7 @@
             <section>
                 <div class="board-area">
                     <div class="game-status" id="game_status">
-                        Game Loading
+                        Game loading...
                         <!-- <span id="game_status">Game Loading</span> -->
                     </div>
                     <table class="board" id="board">
@@ -55,8 +55,8 @@
                     <h5>Winning step length:</h5>
                     <ul>
                         <li><button type="button" class="btn-rad btn-win" name="win_3" style="background-color: #22263f;">3</button></li>
-                        <li><button type="button" class="btn-rad btn-win" name="win_4">4</button></li>
-                        <li><button type="button" class="btn-rad btn-win" name="win_5">5</button></li>
+                        <li><button type="button" class="btn-rad btn-win" name="win_4" disabled="true" style="background-color: #b0b0b0; box-shadow: none; transform: none;">4</button></li>
+                        <li><button type="button" class="btn-rad btn-win" name="win_5" disabled="true" style="background-color: #b0b0b0; box-shadow: none; transform: none;">5</button></li>
                     </ul>
                     <h5>Player 1 game piece:</h5>
                     <ul>

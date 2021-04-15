@@ -26,7 +26,7 @@ SOFTWARE.
 """
 from browser import document as dom
 from browser import html, DOMEvent
-
+from tictactoe import heyo
 
 # GLOBAL VARIABLES
 WINNING_STEP_LEN = 3
@@ -45,6 +45,7 @@ class ThemeColor:
     green: str = "#1ea382"
     orange: str = "#f4a83e"
     purple: str = "#6145b2"
+    disabled: str = "#b0b0b0"
 
 
 def draw_board(table: html.TABLE, side: int) -> None:
@@ -91,6 +92,14 @@ def switch_selection(
 
     # darken `selected` button's background color
     selected.attrs["style"] = f"{colortype}: {ThemeColor.sel};"
+
+
+def disable_button(button: html.BUTTON) -> None:
+    """
+    helper function to disable a specific button and set its style to show the
+    disabled state
+    """
+    pass
 
 
 def ev_board_size(event: DOMEvent) -> None:
@@ -178,17 +187,17 @@ def ev_player_2_role(event: DOMEvent) -> None:
 
     # find the selected option
     selected = [option.value for option in target if option.selected]
-    print(selected)
 
     # grab new starting player and set the global variable
     PLAYER_2_ROLE = selected[0]
 
     # log the change in the broswer console
-    # print(f"Player {START_FIRST} will start first.")
+    print(f"Player 2 will be {PLAYER_2_ROLE}")
 
 
 if __name__ == '__main__':
     print("https://sammdu.com")
+    print(heyo)
 
     # draw a 3x3 board by default
     draw_board(dom['board'], 3)
