@@ -106,10 +106,9 @@ class GameState():
             self._board[row][col] = piece
             self.empty_spots.remove(spot)
             self.next_player = 'p2' if self.next_player == 'p1' else 'p1'
-            self._move_count += 1
+            self.move_history.append(spot)
         else:
             raise ValueError(f"[!] Given spot {spot} is not empty.")
-
 
     def get_winner(self) -> str:
         """
@@ -154,11 +153,11 @@ class GameState():
         return None
 
 
-g = GameState(empty_board(3))
-print(g.empty_spots)
-g.place_piece('x', '22')
-print(g._board)
-g.get_winner()
+# g = GameState(empty_board(3))
+# print(g.empty_spots)
+# g.place_piece('x', '22')
+# print(g._board)
+# g.get_winner()
 
 
 ################################################################################
@@ -191,7 +190,7 @@ class AIRandomPlayer(Player):
     An 'AI' player that simply makes random moves that are available in the game state.
     """
 
-    def return_move(self, game: GameState, prev_move: str):
+    def return_move(self, game: GameState, prev_move: str) -> tuple[str, str]:
         """
         return the game piece {'x', 'o'} and a move in the given game state
 
@@ -223,8 +222,8 @@ class AIMinimaxPlayer(Player):
 
 def role_to_player(role: str, piece: str) -> Player:
     """
-    convert the string representation of a player's role and return a `Player` object
-    accordingly; set the `Player` object's piece attribute as given
+    helper function to convert the string representation of a player's role and return a
+    `Player` object accordingly; set the `Player` object's piece attribute as given
     """
     if role == "ai_random":
         return AIRandomPlayer(piece)
@@ -232,6 +231,21 @@ def role_to_player(role: str, piece: str) -> Player:
         return AIMinimaxPlayer(piece, role[-4:])
     else:
         return "human"
+
+
+def piece_not(piece: str) -> str:
+    """
+    helper function to return the other game piece that is not the current game piece
+
+    Preconditions:
+        - piece in {'x', 'o'}
+
+    >>> piece_not('x')
+    'o'
+    >>> piece_not('o')
+    'x'
+    """
+    return 'x' if piece == 'o' else 'o'
 
 
 def init_game(
@@ -251,7 +265,7 @@ def init_game(
     game = GameState(empty_board(board_side))
 
     # set player 2's game piece
-    p2_piece = 'o' if p1_piece == 'x' else 'x'
+    p2_piece = piece_not(p1_piece)
 
     # initialize players' classes
     p1 = role_to_player(p1_role, p1_piece)

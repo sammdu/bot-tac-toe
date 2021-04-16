@@ -43,12 +43,14 @@ class ThemeColor:
 
 
 # GLOBAL VARIABLES
-WINNING_STEP_LEN = 3
-PLAYER_1_PIECE = 'x'
-START_FIRST = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
-PLAYER_2_ROLE = "another_human"
-PLAYER_1_COLOR = ThemeColor.purple
-PLAYER_2_COLOR = ThemeColor.orange
+BOARD_SIDE_LENGTH: int = 3
+WINNING_STEP_LEN: int = 3  # currently unused because set to be the same as side length
+PLAYER_1_PIECE: str = 'x'
+START_FIRST: str = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
+PLAYER_2_ROLE: str = "another_human"
+PLAYER_1_COLOR: str = ThemeColor.purple
+PLAYER_2_COLOR: str = ThemeColor.orange
+GAME_OBJS: dict = {}
 
 
 def draw_board(table: html.TABLE, side: int) -> None:
@@ -77,8 +79,10 @@ def draw_board(table: html.TABLE, side: int) -> None:
     }}
     """
 
-    # update the winning step length
+    # update the global side length winning step length
+    global BOARD_SIDE_LENGTH
     global WINNING_STEP_LEN
+    BOARD_SIDE_LENGTH = side
     WINNING_STEP_LEN = side
 
 
@@ -154,6 +158,7 @@ def ev_board_size(event: DOMEvent) -> None:
 
 def ev_win_step(event: DOMEvent) -> None:
     """
+    [!] this function is currently unused, but may be used in the future
     change the number of steps required to win the game based on the
     given button event
     write the result into the global variable `WINNING_STEP_LEN`
@@ -267,17 +272,102 @@ def cell_click(event: DOMEvent) -> None:
     """
     target = event.target
     # print(f"click {target.attrs['name']}")
-    target.text = PLAYER_1_PIECE
+    which_player = GAME_OBJS["game"].next_player
+    piece = PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(PLAYER_1_PIECE)
+    target.text = piece
     target.unbind("click", cell_click)
     target.unbind("mouseout", cell_unhover)
     target.unbind("mouseover", cell_hover)
     target.attrs["style"] = f"color: {PLAYER_1_COLOR};"
+    ev_game_round(event)
 
 
-def start_game(event: DOMEvent) -> None:
+def draw_piece(piece: str, spot: str):
+    """
+    helper function to draw a given game piece at the given spot on the game board UI
+    """
+    for c in dom.select('.cell'):
+        if c.name == spot:
+            c.text = piece
+            c.unbind("click", cell_click)
+            c.unbind("mouseout", cell_unhover)
+            c.unbind("mouseover", cell_hover)
+            if piece == PLAYER_1_PIECE:
+                c.attrs["style"] = f"color: {PLAYER_1_COLOR};"
+            else:
+                c.attrs["style"] = f"color: {PLAYER_2_COLOR};"
+
+
+def announce_winner(winner: str) -> None:
     """
     """
-    pass
+    print(f"Winner is {winner}!")
+
+
+def ev_game_round(event: DOMEvent) -> None:
+    """
+    advance a round of the game based on the current game state
+    can be triggered by the start_game function or a player making a move
+    """
+    target = event.target
+    game = GAME_OBJS["game"]
+    player = GAME_OBJS[game.next_player]
+
+    print(str(type(target)))
+
+    # when we start a fresh game
+    if target.attrs['name'] == "start" and player != "human":
+        piece, spot = player.return_move(game, None)
+        game.place_piece(piece, spot)
+
+    # when getting called by a human player
+    elif "cell" in target.classList:
+        spot = target.attrs['name']
+        if game.next_player == "p1":
+            piece = PLAYER_1_PIECE
+        else:
+            piece = ttt.piece_not(PLAYER_1_PIECE)
+        game.place_piece(piece, spot)
+
+    # check for winners
+    if winner := game.get_winner():
+        announce_winner(winner)
+        return
+    else:
+        dom['game_status'].html = f"""
+            Player {game.next_player[-1]}'s turn.
+        """
+
+    # make the next move if the next player is not human
+    player = GAME_OBJS[game.next_player]
+    if player != "human":
+        piece, spot = player.return_move(game, game.move_history[-1])
+        game.place_piece(piece, spot)
+        draw_piece(piece, spot)
+
+
+def ev_start_game(event: DOMEvent) -> None:
+    """
+    start the game by calling the initializer and calling the first round
+    """
+    global GAME_OBJS
+    game, p1, p2 = ttt.init_game(
+        BOARD_SIDE_LENGTH,
+        PLAYER_1_PIECE,
+        START_FIRST,
+        PLAYER_2_ROLE,
+        p1_role="human"
+    )
+
+    # update the game objects store according to the newly initialized game
+    GAME_OBJS["game"] = game
+    GAME_OBJS["p1"] = p1
+    GAME_OBJS["p2"] = p2
+
+    # bind trigger functions for each cell of the game board UI
+    bind_cells()
+
+    ev_game_round(event)
 
 
 if __name__ == '__main__':
@@ -305,6 +395,4 @@ if __name__ == '__main__':
     for b in dom.select('.btn-st'):
         b.bind("click", ev_who_starts_first)
     dom["player_2_role"].bind("change", ev_player_2_role)
-
-    # bind trigger functions for each cell
-    bind_cells()
+    dom["btn_start"].bind("click", ev_start_game)
