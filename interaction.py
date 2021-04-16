@@ -26,7 +26,7 @@ SOFTWARE.
 """
 from browser import document as dom
 from browser import html, DOMEvent
-from tictactoe import heyo
+import tictactoe as ttt
 
 
 class ThemeColor:
@@ -76,6 +76,10 @@ def draw_board(table: html.TABLE, side: int) -> None:
         table td{{width: {45/side}%;}}  /* (45/{side})% */
     }}
     """
+
+    # update the winning step length
+    global WINNING_STEP_LEN
+    WINNING_STEP_LEN = side
 
 
 def switch_selection(
@@ -234,6 +238,8 @@ def ev_player_2_role(event: DOMEvent) -> None:
 
 
 def bind_cells() -> None:
+    """
+    """
     for c in dom.select('.cell'):
         c.bind("mouseover", cell_hover)
         c.bind("mouseout", cell_unhover)
@@ -241,18 +247,24 @@ def bind_cells() -> None:
 
 
 def cell_hover(event: DOMEvent) -> None:
+    """
+    """
     target = event.target
     # print(f"hover {target.attrs['name']}")
     target.text = PLAYER_1_PIECE
 
 
 def cell_unhover(event: DOMEvent) -> None:
+    """
+    """
     target = event.target
     # print(f"hover {target.attrs['name']}")
     target.text = ''
 
 
 def cell_click(event: DOMEvent) -> None:
+    """
+    """
     target = event.target
     # print(f"click {target.attrs['name']}")
     target.text = PLAYER_1_PIECE
@@ -261,9 +273,14 @@ def cell_click(event: DOMEvent) -> None:
     target.attrs["style"] = f"color: {PLAYER_1_COLOR};"
 
 
+def start_game(event: DOMEvent) -> None:
+    """
+    """
+    pass
+
+
 if __name__ == '__main__':
     print("https://sammdu.com")
-    print(heyo)
 
     # draw a 3x3 board by default
     draw_board(dom['board'], 3)
@@ -280,8 +297,8 @@ if __name__ == '__main__':
     # bind functions to buttons
     for b in dom.select('.btn-len'):
         b.bind("click", ev_board_size)
-    for b in dom.select('.btn-win'):
-        b.bind("click", ev_win_step)
+    # for b in dom.select('.btn-win'):
+    #     b.bind("click", ev_win_step)
     for b in dom.select('.btn-piece'):
         b.bind("click", ev_player1_piece)
     for b in dom.select('.btn-st'):
@@ -290,3 +307,5 @@ if __name__ == '__main__':
 
     # bind trigger functions for each cell
     bind_cells()
+
+    g = ttt.Game()
