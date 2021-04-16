@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from browser import document as dom
-from browser import html, DOMEvent
+from browser import html, DOMEvent, window
 import tictactoe as ttt
 
 
@@ -333,8 +333,6 @@ def ev_game_round(event: DOMEvent) -> None:
     game = GAME_OBJS["game"]
     player = GAME_OBJS[game.next_player]
 
-    print(str(type(target)))
-
     # when we start a fresh game
     if target.attrs['name'] == "start" and player != "human":
         piece, spot = player.return_move(game, None)
@@ -394,6 +392,13 @@ def ev_start_game(event: DOMEvent) -> None:
     ev_game_round(event)
 
 
+def ev_reset_game(event) -> None:
+    """
+    this function gets triggered by the reset button, and it refershes the browser page
+    """
+    window.location.reload()
+
+
 if __name__ == '__main__':
     print("https://sammdu.com")
 
@@ -420,3 +425,4 @@ if __name__ == '__main__':
         b.bind("click", ev_who_starts_first)
     dom["player_2_role"].bind("change", ev_player_2_role)
     dom["btn_start"].bind("click", ev_start_game)
+    dom["btn_reset"].bind("click", ev_reset_game)
