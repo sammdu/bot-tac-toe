@@ -49,9 +49,10 @@ def empty_board(side: int) -> None:
 
 class GameState():
     """
-    a class representing a Tic Tac Toe game state
+    A class representing a Tic Tac Toe game state.
     """
     next_player: str
+    empty_spots: list[Optional[str]]
 
     # Private Instance Attributes:
     #   - _board: a nested list representing a tictactoe board
@@ -60,12 +61,20 @@ class GameState():
     _board_side: int
     _move_count: int
 
-
     def __init__(self, board: list[list[str]], next_player='p1', move_count=0) -> None:
         self._board = board
         self._board_side = len(self._board)  # calculate the side length of the game board
-        self.next_player = next_player
         self._move_count = move_count
+        self.next_player = next_player
+        self.empty_spots = self._find_empty_spots()
+
+    def _find_empty_spots(self) -> list[Optional[str]]:
+        empty_spots = []
+        for row_idx in range(self._board_side):
+            for col_idx in range(self._board_side):
+                if self._board[row_idx][col_idx] == '':
+                    empty_spots.append(str(row_idx) + str(col_idx))
+        return empty_spots
 
     def place_piece(self, piece: str, spot: str) -> None:
         """
@@ -87,8 +96,9 @@ class GameState():
         if col > self._board_side or col < 0:
             raise ValueError(f"[!] Given column {col} in spot {spot} is out of range.")
 
-        if not self._board[row][col]:  # check if the spot is empty
+        if spot in self.empty_spots:  # check if the spot is empty
             self._board[row][col] = piece
+            self.empty_spots.remove(spot)
         else:
             raise ValueError(f"[!] Given spot {spot} is not empty.")
 
@@ -126,17 +136,18 @@ class GameState():
         elif all(self._board[i][side - i - 1] == 'o' for i in range(side)):
             return 'o'
 
-        # if there are empty spots in the board then no winners yet
+        # if there are no empty spots in the board then it's a tie
         # [*] this can be improved by predicting early ties, but I won't implement it
         # right now
-        if not all(self._board[i][j] for i in range(side) for j in range(side)):
-            return None
+        if not self.empty_spots:
+            return "tie"
 
-        # otherwise it's a tie
-        return "tie"
+        # otherwise there's no winner yet
+        return None
 
 
 g = GameState(empty_board(3))
+print(g.empty_spots)
 g.place_piece('x', '22')
 print(g._board)
 g.get_winner()
@@ -157,31 +168,55 @@ class Player:
         assert piece in {'x', 'o'}
         self._piece = piece
 
-    def make_move(self, game: GameState, prev_move: str, your_move=None):
+    def return_move(self, game: GameState, prev_move: str):
         """
-        Make a move in the given game state.
+        return a move in the given game state
 
         `prev_move` is the opponent player's most recent move, or `None` if no moves
         have been made
-        `your_move` is only used by a human player, to supply a move to make; an AI player
-        will disregard this argument
         """
         raise NotImplementedError
 
 
-class HumanPlayer(Player):
-    """
-    A human player who takes a given
-    """
-
-
 class AIRandomPlayer(Player):
     """
+    An 'AI' player that simply makes random moves that are available in the game state.
     """
+
+    def return_move(self, game: GameState, prev_move: str):
+        """
+        return the game piece {'x', 'o'} and a move in the given game state
+
+        `prev_move` is the opponent player's most recent move, or `None` if no moves
+        have been made
+        """
+        return self._piece, random.choice(game.empty_spots)
 
 
 class AIMinimaxPlayer(Player):
     """
+    An 'AI' player that employs a MiniMax algorithm on a game tree to make moves in the
+    game state.
+    """
+    difficulty: str
+
+    def __init__(self, piece, difficulty) -> None:
+        super().__init__()
+
+
+# gt = GameState([['x', 'o', 'o'], ['o', '', 'o'], ['x', 'o', 'o']])
+# print(gt._board)
+# print(gt.empty_spots)
+# gt.get_winner()
+# air = AIRandomPlayer('x')
+# pc, sp = air.return_move(gt, None)
+# gt.place_piece(pc, sp)
+
+
+def run_game(board_side: int, p1_piece: str, p2_role: str) -> tuple[str, list[str]]:
+    """
+    run a Tic Tac Toe game on a board of given side length `board_side`;
+    return the winner of the game as well as the list of moves made in the game
     """
 
 
