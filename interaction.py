@@ -303,8 +303,11 @@ def draw_piece(piece: str, spot: str):
                 c.attrs["style"] = f"color: {PLAYER_2_COLOR};"
 
 
-def check_winner(game: ttt.GameState) -> None:
+def check_winner(game: ttt.GameState) -> bool:
     """
+    given the game state, check for winners;
+    if a winner is found, announce it to the game status and return `True`;
+    otherwise prompt the next player to play, and return `False`
     """
     # check for winners
     if winning_piece := game.get_winning_piece():
@@ -331,11 +334,15 @@ def check_winner(game: ttt.GameState) -> None:
         # log the winner in the browser console
         print(f"Winner is Player {winner_num}!")
 
+        return True
+
     # if no winners, announce the next player's turn
     else:
         dom['game_status'].html = f"""
             Player {game.next_player[-1]}'s turn.
         """
+
+        return False
 
 
 def ev_game_round(event: DOMEvent) -> None:
@@ -364,8 +371,9 @@ def ev_game_round(event: DOMEvent) -> None:
             piece = ttt.piece_not(PLAYER_1_PIECE)
         game.place_piece(piece, spot)
 
-    # check for winners
-    check_winner(game)
+    # check for winners; exit the function if a winner is found
+    if check_winner(game):
+        return
 
     # make the next move if the next player is not human
     player_next = GAME_OBJS[game.next_player]

@@ -271,7 +271,7 @@ button.btn-rad
 button.btn-piece
 {
     background-color: #ffffff;
-    background-color: #ffffff00;
+    /* background-color: #ffffff00; */
     color: #7399c6;
     font-family: 'TTTPiece' !important;
     font-size: 2em;
