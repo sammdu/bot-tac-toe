@@ -256,7 +256,9 @@ def cell_hover(event: DOMEvent) -> None:
     """
     target = event.target
     # print(f"hover {target.attrs['name']}")
-    target.text = PLAYER_1_PIECE
+    which_player = GAME_OBJS["game"].next_player
+    piece = PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(PLAYER_1_PIECE)
+    target.text = piece
 
 
 def cell_unhover(event: DOMEvent) -> None:
@@ -278,7 +280,10 @@ def cell_click(event: DOMEvent) -> None:
     target.unbind("click", cell_click)
     target.unbind("mouseout", cell_unhover)
     target.unbind("mouseover", cell_hover)
-    target.attrs["style"] = f"color: {PLAYER_1_COLOR};"
+    if which_player == 'p1':
+        target.attrs["style"] = f"color: {PLAYER_1_COLOR};"
+    else:
+        target.attrs["style"] = f"color: {PLAYER_2_COLOR};"
     ev_game_round(event)
 
 
@@ -298,10 +303,25 @@ def draw_piece(piece: str, spot: str):
                 c.attrs["style"] = f"color: {PLAYER_2_COLOR};"
 
 
-def announce_winner(winner: str) -> None:
+def announce_winner(winner_piece: str) -> None:
     """
     """
-    print(f"Winner is {winner}!")
+    # find out whether player 1 or 2 won the game
+    winner_num = 1 if winner_piece == PLAYER_1_PIECE else 2
+
+    # announce the winner
+    dom['game_status'].html = f"""
+        Player {winner_num} wins!
+    """
+
+    # disable game board cells
+    for c in dom.select('.cell'):
+        c.unbind("click", cell_click)
+        c.unbind("mouseout", cell_unhover)
+        c.unbind("mouseover", cell_hover)
+
+    # log the winner in the browser console
+    print(f"Winner is Player {winner_num}!")
 
 
 def ev_game_round(event: DOMEvent) -> None:
@@ -366,6 +386,10 @@ def ev_start_game(event: DOMEvent) -> None:
 
     # bind trigger functions for each cell of the game board UI
     bind_cells()
+
+    # replace the start button with the reset button
+    event.target.attrs["style"] = "display: none;"
+    dom["btn_reset"].attrs["style"] = ""
 
     ev_game_round(event)
 
