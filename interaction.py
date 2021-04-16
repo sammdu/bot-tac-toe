@@ -303,25 +303,33 @@ def draw_piece(piece: str, spot: str):
                 c.attrs["style"] = f"color: {PLAYER_2_COLOR};"
 
 
-def announce_winner(winner_piece: str) -> None:
+def check_winner(game: ttt.GameState) -> None:
     """
     """
-    # find out whether player 1 or 2 won the game
-    winner_num = 1 if winner_piece == PLAYER_1_PIECE else 2
+    # check for winners
+    if winning_piece := game.get_winning_piece():
+        # find out whether player 1 or 2 won the game
+        winner_num = 1 if winning_piece == PLAYER_1_PIECE else 2
 
-    # announce the winner
-    dom['game_status'].html = f"""
-        Player {winner_num} wins!
-    """
+        # announce the winner
+        dom['game_status'].html = f"""
+            Player {winner_num} wins!
+        """
 
-    # disable game board cells
-    for c in dom.select('.cell'):
-        c.unbind("click", cell_click)
-        c.unbind("mouseout", cell_unhover)
-        c.unbind("mouseover", cell_hover)
+        # disable game board cells
+        for c in dom.select('.cell'):
+            c.unbind("click", cell_click)
+            c.unbind("mouseout", cell_unhover)
+            c.unbind("mouseover", cell_hover)
 
-    # log the winner in the browser console
-    print(f"Winner is Player {winner_num}!")
+        # log the winner in the browser console
+        print(f"Winner is Player {winner_num}!")
+
+    # if no winners, announce the next player's turn
+    else:
+        dom['game_status'].html = f"""
+            Player {game.next_player[-1]}'s turn.
+        """
 
 
 def ev_game_round(event: DOMEvent) -> None:
@@ -348,30 +356,17 @@ def ev_game_round(event: DOMEvent) -> None:
         game.place_piece(piece, spot)
 
     # check for winners
-    if winner := game.get_winner():
-        announce_winner(winner)
-        return
-    else:
-        dom['game_status'].html = f"""
-            Player {game.next_player[-1]}'s turn.
-        """
+    check_winner(game)
 
     # make the next move if the next player is not human
     player_next = GAME_OBJS[game.next_player]
-    print(player_next)
     if player_next != "human":
         piece, spot = player_next.return_move(game, game.move_history[-1])
         game.place_piece(piece, spot)
         draw_piece(piece, spot)
 
-    # check for winners
-    if winner := game.get_winner():
-        announce_winner(winner)
-        return
-    else:
-        dom['game_status'].html = f"""
-            Player {game.next_player[-1]}'s turn.
-        """
+    # check for winners again
+    check_winner(game)
 
 
 def ev_start_game(event: DOMEvent) -> None:

@@ -110,7 +110,7 @@ class GameState():
         else:
             raise ValueError(f"[!] Given spot {spot} is not empty.")
 
-    def get_winner(self) -> str:
+    def get_winning_piece(self) -> str:
         """
         return 'x' or 'o' or `None` as the winner of the game in its current state
         """
@@ -157,7 +157,7 @@ class GameState():
 # print(g.empty_spots)
 # g.place_piece('x', '22')
 # print(g._board)
-# g.get_winner()
+# g.get_winning_piece()
 
 
 ################################################################################
@@ -214,7 +214,7 @@ class AIMinimaxPlayer(Player):
 # gt = GameState([['x', 'o', 'o'], ['o', '', 'o'], ['x', 'o', 'o']])
 # print(gt._board)
 # print(gt.empty_spots)
-# gt.get_winner()
+# gt.get_winning_piece()
 # air = AIRandomPlayer('x')
 # pc, sp = air.return_move(gt, None)
 # gt.place_piece(pc, sp)
