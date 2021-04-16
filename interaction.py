@@ -292,7 +292,7 @@ def draw_piece(piece: str, spot: str):
     helper function to draw a given game piece at the given spot on the game board UI
     """
     for c in dom.select('.cell'):
-        if c.name == spot:
+        if c.attrs["name"] == spot:
             c.text = piece
             c.unbind("click", cell_click)
             c.unbind("mouseout", cell_unhover)
@@ -357,11 +357,21 @@ def ev_game_round(event: DOMEvent) -> None:
         """
 
     # make the next move if the next player is not human
-    player = GAME_OBJS[game.next_player]
-    if player != "human":
-        piece, spot = player.return_move(game, game.move_history[-1])
+    player_next = GAME_OBJS[game.next_player]
+    print(player_next)
+    if player_next != "human":
+        piece, spot = player_next.return_move(game, game.move_history[-1])
         game.place_piece(piece, spot)
         draw_piece(piece, spot)
+
+    # check for winners
+    if winner := game.get_winner():
+        announce_winner(winner)
+        return
+    else:
+        dom['game_status'].html = f"""
+            Player {game.next_player[-1]}'s turn.
+        """
 
 
 def ev_start_game(event: DOMEvent) -> None:
