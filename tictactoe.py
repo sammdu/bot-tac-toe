@@ -29,6 +29,10 @@ from typing import Optional
 import random
 
 
+################################################################################
+# Tic Tac Toe game representation
+################################################################################
+
 def empty_board(side: int) -> None:
     """
     generate an empty game board (list of lists) with sidelength `side`
@@ -43,28 +47,51 @@ def empty_board(side: int) -> None:
     return board
 
 
-empty_board(3)
-
-
 class GameState():
     """
     a class representing a Tic Tac Toe game state
     """
+    next_player: str
+
     # Private Instance Attributes:
     #   - _board: a nested list representing a tictactoe board
     #   - _move_count: the number of moves that have been made in the current game
     _board: list[list[str]]
-    _move_count
-    next_player: str
+    _board_side: int
+    _move_count: int
 
-    def __init__(
-        self,
-        board: list[list[str]],
-        next_player='p1',
-        move_count=0
-    ) -> None:
+
+    def __init__(self, board: list[list[str]], next_player='p1', move_count=0) -> None:
         self._board = board
+        self._board_side = len(self._board)  # calculate the side length of the game board
         self.next_player = next_player
+        self._move_count = move_count
+
+    def place_piece(self, piece: str, spot: str) -> None:
+        """
+        place the given piece on the given spot on the game board, if the spot is empty;
+        ensure that the spot given exists on the board (is not out of range)
+
+        Preconditions:
+            - `spot` must be a string of two integers, first representing the row, second
+              representing the column in the board. `ValueError`s will be raised if this
+              is not satisfied
+            - the spot must be empty, or a `ValueError` will be raised
+            - piece in {'x', 'o'}
+        """
+        row = int(spot[0])
+        col = int(spot[1])
+
+        if row > self._board_side or row < 0:
+            raise ValueError(f"[!] Given row {row} in spot {spot} is out of range.")
+        if col > self._board_side or col < 0:
+            raise ValueError(f"[!] Given column {col} in spot {spot} is out of range.")
+
+        if not self._board[row][col]:  # check if the spot is empty
+            self._board[row][col] = piece
+        else:
+            raise ValueError(f"[!] Given spot {spot} is not empty.")
+
 
     def get_winner(self) -> str:
         """
@@ -77,7 +104,8 @@ class GameState():
             elif all(spot == 'o' for spot in row):
                 return 'o'
 
-        side = len(self._board)
+        # grab the side length fo the game board
+        side = self._board_side
 
         # if no winners in rows, check each column
         for col_num in range(side):
@@ -108,27 +136,51 @@ class GameState():
         return "tie"
 
 
+g = GameState(empty_board(3))
+g.place_piece('x', '22')
+print(g._board)
+g.get_winner()
+
+
+################################################################################
+# Player Classes
+################################################################################
 class Player:
     """
+    An abstract class representing a Tic Tac Toe player.
     """
+    # Private Instance Attributes:
+    #   - _piece: game piece of the current player, either `x` or `o`
+    _piece: str
 
-    def make_move(self):
+    def __init__(self, piece) -> None:
+        assert piece in {'x', 'o'}
+        self._piece = piece
+
+    def make_move(self, game: GameState, prev_move: str, your_move=None):
         """
+        Make a move in the given game state.
+
+        `prev_move` is the opponent player's most recent move, or `None` if no moves
+        have been made
+        `your_move` is only used by a human player, to supply a move to make; an AI player
+        will disregard this argument
         """
         raise NotImplementedError
 
 
-class HumanPlayer():
+class HumanPlayer(Player):
+    """
+    A human player who takes a given
+    """
+
+
+class AIRandomPlayer(Player):
     """
     """
 
 
-class AIRandomPlayer():
-    """
-    """
-
-
-class AIMinimaxPlayer():
+class AIMinimaxPlayer(Player):
     """
     """
 
