@@ -54,9 +54,9 @@ class Config:
     WINNING_STEP_LEN: int = 3  # currently unused but can be used when extended
     PLAYER_1_PIECE: str = 'x'
     START_FIRST: str = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
-    PLAYER_2_ROLE: str = "another_human"
+    PLAYER_2_ROLE: str = "ai_random"
     PLAYER_1_COLOR: str = ThemeColor.purple
-    PLAYER_2_COLOR: str = ThemeColor.orange
+    PLAYER_2_COLOR: str = ThemeColor.green
     GAME_OBJS: dict = {}
 
 

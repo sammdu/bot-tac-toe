@@ -342,3 +342,28 @@ footer h4
     font-weight: 500;
     font-size: 1em;
 }
+
+footer a
+{
+    /* padding: 0.5em; */
+    text-decoration: none;
+}
+
+a.link_footer:link,
+a.link_footer:visited
+{
+    text-decoration: underline;
+    color: inherit;
+
+    /* add background wipe transition effect */
+    background: linear-gradient(to left, #385aa7 50.5%, #fff 50%) right;
+    background-size: 200%;
+    transition: 0.2s ease;
+}
+
+a.link_footer:hover,
+a.link_footer:active
+{
+    background-position: left;
+    color: #385aa7;
+}
