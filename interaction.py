@@ -43,14 +43,21 @@ class ThemeColor:
 
 
 # GLOBAL VARIABLES
-BOARD_SIDE_LENGTH: int = 3
-WINNING_STEP_LEN: int = 3  # currently unused because set to be the same as side length
-PLAYER_1_PIECE: str = 'x'
-START_FIRST: str = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
-PLAYER_2_ROLE: str = "another_human"
-PLAYER_1_COLOR: str = ThemeColor.purple
-PLAYER_2_COLOR: str = ThemeColor.orange
-GAME_OBJS: dict = {}
+class Config:
+    """
+    global configurations to keep track of
+
+    Class Attributes:
+        -
+    """
+    BOARD_SIDE_LENGTH: int = 3
+    WINNING_STEP_LEN: int = 3  # currently unused but can be used when extended
+    PLAYER_1_PIECE: str = 'x'
+    START_FIRST: str = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
+    PLAYER_2_ROLE: str = "another_human"
+    PLAYER_1_COLOR: str = ThemeColor.purple
+    PLAYER_2_COLOR: str = ThemeColor.orange
+    GAME_OBJS: dict = {}
 
 
 def draw_board(table: html.TABLE, side: int) -> None:
@@ -80,10 +87,10 @@ def draw_board(table: html.TABLE, side: int) -> None:
     """
 
     # update the global side length winning step length
-    global BOARD_SIDE_LENGTH
-    global WINNING_STEP_LEN
-    BOARD_SIDE_LENGTH = side
-    WINNING_STEP_LEN = side
+    # global BOARD_SIDE_LENGTH
+    # global WINNING_STEP_LEN
+    Config.BOARD_SIDE_LENGTH = side
+    Config.WINNING_STEP_LEN = side
 
 
 def switch_selection(
@@ -161,85 +168,85 @@ def ev_win_step(event: DOMEvent) -> None:
     [!] this function is currently unused, but may be used in the future
     change the number of steps required to win the game based on the
     given button event
-    write the result into the global variable `WINNING_STEP_LEN`
+    write the result into the configuration variable `Config.WINNING_STEP_LEN`
     """
-    global WINNING_STEP_LEN
+    # global WINNING_STEP_LEN
     target = event.target
 
     # change the button colors to reflect user selection
     switch_selection(target, ".btn-win")
 
     # grab new winning length and set the global variable
-    WINNING_STEP_LEN = int(target.name[-1])
+    Config.WINNING_STEP_LEN = int(target.name[-1])
 
     # log the change in the broswer console
-    print(f"Set winning step length to: {WINNING_STEP_LEN}")
+    print(f"Set winning step length to: {Config.WINNING_STEP_LEN}")
 
 
 def ev_player1_piece(event: DOMEvent) -> None:
     """
     change the game piece (x/o) used by player 1 based on the given
     button event
-    write the result into the global variable `PLAYER_1_PIECE`
+    write the result into the configuration variable `Config.PLAYER_1_PIECE`
     """
-    global PLAYER_1_PIECE
+    # global PLAYER_1_PIECE
     target = event.target
 
     # change the button colors to reflect user selection
     switch_selection(target, ".btn-piece", colortype="color")
 
     # grab new player 1 game piece and set the global variable
-    PLAYER_1_PIECE = target.name[-1]
+    Config.PLAYER_1_PIECE = target.name[-1]
 
     # log the change in the broswer console
-    print(f"Changed Player 1's game piece to: {PLAYER_1_PIECE}")
+    print(f"Changed Player 1's game piece to: {Config.PLAYER_1_PIECE}")
 
 
 def ev_who_starts_first(event: DOMEvent) -> None:
     """
     change the whether player 1 or player 2 starts first, or determine
     by a random draw, based on the given button event
-    write the result into the global variable `START_FIRST`
+    write the result into the configuration variable `Config.START_FIRST`
     """
-    global START_FIRST
+    # global START_FIRST
     target = event.target
 
     # change the button colors to reflect user selection
     switch_selection(target, ".btn-st")
 
     # grab new starting player and set the global variable
-    START_FIRST = target.name[-2:]
+    Config.START_FIRST = target.name[-2:]
 
     # log the change in the broswer console
-    print(f"Player {START_FIRST} will start first.")
+    print(f"Player {Config.START_FIRST} will start first.")
 
 
 def ev_player_2_role(event: DOMEvent) -> None:
     """
     change the role of player 2, between `another_human`, `ai_random`, `ai_easy`,
     and `ai_hard`
-    write the result into the global variable `PLAYER_2_ROLE`
-    also adjust `PLAYER_2_COLOR` to be green if player 2 is an AI, or orange if
+    write the result into the configuration variable `Config.PLAYER_2_ROLE`
+    also adjust `Config.PLAYER_2_COLOR` to be green if player 2 is an AI, or orange if
     player 2 is a human
     """
-    global PLAYER_2_ROLE
-    global PLAYER_2_COLOR
+    # global PLAYER_2_ROLE
+    # global PLAYER_2_COLOR
     target = event.target
 
     # find the selected option
     selected = [option.value for option in target if option.selected]
 
     # grab new starting player and set the global variable
-    PLAYER_2_ROLE = selected[0]
+    Config.PLAYER_2_ROLE = selected[0]
 
     # change game piece color depending on player 2's role
-    if PLAYER_2_ROLE[:2] == "ai":
-        PLAYER_2_COLOR = ThemeColor.green
+    if Config.PLAYER_2_ROLE[:2] == "ai":
+        Config.PLAYER_2_COLOR = ThemeColor.green
     else:
-        PLAYER_2_COLOR = ThemeColor.orange
+        Config.PLAYER_2_COLOR = ThemeColor.orange
 
     # log the change in the broswer console
-    print(f"Player 2 will be {PLAYER_2_ROLE}")
+    print(f"Player 2 will be {Config.PLAYER_2_ROLE}")
 
 
 def bind_cells() -> None:
@@ -256,8 +263,8 @@ def cell_hover(event: DOMEvent) -> None:
     """
     target = event.target
     # print(f"hover {target.attrs['name']}")
-    which_player = GAME_OBJS["game"].next_player
-    piece = PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(PLAYER_1_PIECE)
+    which_player = Config.GAME_OBJS["game"].next_player
+    piece = Config.PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(Config.PLAYER_1_PIECE)
     target.text = piece
 
 
@@ -274,16 +281,16 @@ def cell_click(event: DOMEvent) -> None:
     """
     target = event.target
     # print(f"click {target.attrs['name']}")
-    which_player = GAME_OBJS["game"].next_player
-    piece = PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(PLAYER_1_PIECE)
+    which_player = Config.GAME_OBJS["game"].next_player
+    piece = Config.PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(Config.PLAYER_1_PIECE)
     target.text = piece
     target.unbind("click", cell_click)
     target.unbind("mouseout", cell_unhover)
     target.unbind("mouseover", cell_hover)
     if which_player == 'p1':
-        target.attrs["style"] = f"color: {PLAYER_1_COLOR};"
+        target.attrs["style"] = f"color: {Config.PLAYER_1_COLOR};"
     else:
-        target.attrs["style"] = f"color: {PLAYER_2_COLOR};"
+        target.attrs["style"] = f"color: {Config.PLAYER_2_COLOR};"
     ev_game_round(event)
 
 
@@ -297,10 +304,10 @@ def draw_piece(piece: str, spot: str):
             c.unbind("click", cell_click)
             c.unbind("mouseout", cell_unhover)
             c.unbind("mouseover", cell_hover)
-            if piece == PLAYER_1_PIECE:
-                c.attrs["style"] = f"color: {PLAYER_1_COLOR};"
+            if piece == Config.PLAYER_1_PIECE:
+                c.attrs["style"] = f"color: {Config.PLAYER_1_COLOR};"
             else:
-                c.attrs["style"] = f"color: {PLAYER_2_COLOR};"
+                c.attrs["style"] = f"color: {Config.PLAYER_2_COLOR};"
 
 
 def check_winner(game: ttt.GameState) -> bool:
@@ -312,7 +319,7 @@ def check_winner(game: ttt.GameState) -> bool:
     # check for winners
     if winning_piece := game.get_winning_piece():
         # find out whether player 1 or 2 won the game
-        winner_num = 1 if winning_piece == PLAYER_1_PIECE else 2
+        winner_num = 1 if winning_piece == Config.PLAYER_1_PIECE else 2
 
         # announce the winner
         dom['game_status'].html = f"""
@@ -351,8 +358,8 @@ def ev_game_round(event: DOMEvent) -> None:
     can be triggered by the start_game function or a player making a move
     """
     target = event.target
-    game = GAME_OBJS["game"]
-    player = GAME_OBJS[game.next_player]
+    game = Config.GAME_OBJS["game"]
+    player = Config.GAME_OBJS[game.next_player]
 
     print(player)
 
@@ -366,9 +373,9 @@ def ev_game_round(event: DOMEvent) -> None:
     elif "cell" in target.classList:
         spot = target.attrs['name']
         if game.next_player == "p1":
-            piece = PLAYER_1_PIECE
+            piece = Config.PLAYER_1_PIECE
         else:
-            piece = ttt.piece_not(PLAYER_1_PIECE)
+            piece = ttt.piece_not(Config.PLAYER_1_PIECE)
         game.place_piece(piece, spot)
 
     # check for winners; exit the function if a winner is found
@@ -376,7 +383,7 @@ def ev_game_round(event: DOMEvent) -> None:
         return
 
     # make the next move if the next player is not human
-    player_next = GAME_OBJS[game.next_player]
+    player_next = Config.GAME_OBJS[game.next_player]
     if player_next != "human":
         piece, spot = player_next.return_move(game, game.move_history[-1])
         game.place_piece(piece, spot)
@@ -390,19 +397,19 @@ def ev_start_game(event: DOMEvent) -> None:
     """
     start the game by calling the initializer and calling the first round
     """
-    global GAME_OBJS
+    # global GAME_OBJS
     game, p1, p2 = ttt.init_game(
-        BOARD_SIDE_LENGTH,
-        PLAYER_1_PIECE,
-        START_FIRST,
-        PLAYER_2_ROLE,
+        Config.BOARD_SIDE_LENGTH,
+        Config.PLAYER_1_PIECE,
+        Config.START_FIRST,
+        Config.PLAYER_2_ROLE,
         p1_role="human"
     )
 
     # update the game objects store according to the newly initialized game
-    GAME_OBJS["game"] = game
-    GAME_OBJS["p1"] = p1
-    GAME_OBJS["p2"] = p2
+    Config.GAME_OBJS["game"] = game
+    Config.GAME_OBJS["p1"] = p1
+    Config.GAME_OBJS["p2"] = p2
 
     # bind trigger functions for each cell of the game board UI
     bind_cells()
@@ -434,7 +441,7 @@ if __name__ == '__main__':
     """
 
     # enforce a deafult value for the player 2 role select menu
-    dom["player_2_role"].value = PLAYER_2_ROLE
+    dom["player_2_role"].value = Config.PLAYER_2_ROLE
 
     # bind functions to buttons
     for b in dom.select('.btn-len'):

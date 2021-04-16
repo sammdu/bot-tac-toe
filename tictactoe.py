@@ -50,6 +50,9 @@ def empty_board(side: int) -> None:
 class GameState():
     """
     A class representing a Tic Tac Toe game state.
+
+    Instance Attributes:
+        - 
     """
     next_player: str
     empty_spots: list[Optional[str]]
@@ -204,6 +207,9 @@ class AIMinimaxPlayer(Player):
     """
     An 'AI' player that employs a MiniMax algorithm on a game tree to make moves in the
     game state.
+
+    Instance Attributes:
+        -
     """
     difficulty: str
 
