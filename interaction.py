@@ -313,8 +313,14 @@ def check_winner(game: ttt.GameState) -> None:
 
         # announce the winner
         dom['game_status'].html = f"""
-            Player {winner_num} wins!
+            <span style="color: #dd426e; display: inline;">
+                Player {winner_num} wins!
+            </span><br>
+            <span style="font-size: 0.7em; display: inline;">
+                Press the Reset button to start a new game.
+            </span>
         """
+        # dom['game_status'].attrs["style"] = ""
 
         # disable game board cells
         for c in dom.select('.cell'):
@@ -341,12 +347,15 @@ def ev_game_round(event: DOMEvent) -> None:
     game = GAME_OBJS["game"]
     player = GAME_OBJS[game.next_player]
 
+    print(player)
+
     # when we start a fresh game
     if target.attrs['name'] == "start" and player != "human":
         piece, spot = player.return_move(game, None)
         game.place_piece(piece, spot)
+        draw_piece(piece, spot)
 
-    # when getting called by a human player
+    # when getting called by a human player, place the piece for the human
     elif "cell" in target.classList:
         spot = target.attrs['name']
         if game.next_player == "p1":

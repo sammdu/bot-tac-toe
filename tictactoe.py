@@ -195,7 +195,7 @@ class AIRandomPlayer(Player):
         return the game piece {'x', 'o'} and a move in the given game state
 
         `prev_move` is the opponent player's most recent move, or `None` if no moves
-        have been made
+        have been made; not used by `AIRandomPlayer`
         """
         return self._piece, random.choice(game.empty_spots)
 
