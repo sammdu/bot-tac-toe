@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Union
 import random
 
 
@@ -53,18 +53,24 @@ class GameState():
     """
     next_player: str
     empty_spots: list[Optional[str]]
+    move_history: list[Optional[str]]
 
     # Private Instance Attributes:
     #   - _board: a nested list representing a tictactoe board
-    #   - _move_count: the number of moves that have been made in the current game
+    #   [-] _move_count: the number of moves that have been made in the current game
     _board: list[list[str]]
     _board_side: int
-    _move_count: int
+    # _move_count: int
 
-    def __init__(self, board: list[list[str]], next_player='p1', move_count=0) -> None:
+    def __init__(
+        self,
+        board: list[list[str]],
+        next_player: str = 'p1',
+        move_hist: list[Optional[str]] = []
+    ) -> None:
         self._board = board
         self._board_side = len(self._board)  # calculate the side length of the game board
-        self._move_count = move_count
+        self.move_history = move_hist
         self.next_player = next_player
         self.empty_spots = self._find_empty_spots()
 
@@ -99,6 +105,8 @@ class GameState():
         if spot in self.empty_spots:  # check if the spot is empty
             self._board[row][col] = piece
             self.empty_spots.remove(spot)
+            self.next_player = 'p2' if self.next_player == 'p1' else 'p1'
+            self._move_count += 1
         else:
             raise ValueError(f"[!] Given spot {spot} is not empty.")
 
@@ -213,11 +221,48 @@ class AIMinimaxPlayer(Player):
 # gt.place_piece(pc, sp)
 
 
-def run_game(board_side: int, p1_piece: str, p2_role: str) -> tuple[str, list[str]]:
+def role_to_player(role: str, piece: str) -> Player:
     """
-    run a Tic Tac Toe game on a board of given side length `board_side`;
+    convert the string representation of a player's role and return a `Player` object
+    accordingly; set the `Player` object's piece attribute as given
+    """
+    if role == "ai_random":
+        return AIRandomPlayer(piece)
+    elif role[:2] == "ai":
+        return AIMinimaxPlayer(piece, role[-4:])
+    else:
+        return "human"
+
+
+def init_game(
+    board_side: int,
+    p1_piece: str,
+    start_first: str,
+    p2_role: str,
+    p1_role: str = 'human'
+) -> tuple[GameState, Player, Player]:
+    """
+    initialize a Tic Tac Toe game on a board of given side length `board_side`;
     return the winner of the game as well as the list of moves made in the game
     """
+    assert start_first in {'p1', 'p2', 'nd'}
+
+    # create a new game with the board's side lengtn given by `board_side`
+    game = GameState(empty_board(board_side))
+
+    # set player 2's game piece
+    p2_piece = 'o' if p1_piece == 'x' else 'x'
+
+    # initialize players' classes
+    p1 = role_to_player(p1_role, p1_piece)
+    p2 = role_to_player(p2_role, p2_piece)
+
+    # determine which player starts first if left up to random
+    start_first = random.choice(['p1', 'p2']) if start_first == 'nd' else start_first
+    # set the next player in the game state to be the first player
+    game.next_player = start_first
+
+    return game, p1, p2
 
 
 if __name__ == '__main__':

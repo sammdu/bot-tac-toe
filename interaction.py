@@ -268,6 +268,7 @@ def cell_click(event: DOMEvent) -> None:
     target = event.target
     # print(f"click {target.attrs['name']}")
     target.text = PLAYER_1_PIECE
+    target.unbind("click", cell_click)
     target.unbind("mouseout", cell_unhover)
     target.unbind("mouseover", cell_hover)
     target.attrs["style"] = f"color: {PLAYER_1_COLOR};"
@@ -307,5 +308,3 @@ if __name__ == '__main__':
 
     # bind trigger functions for each cell
     bind_cells()
-
-    g = ttt.Game()
