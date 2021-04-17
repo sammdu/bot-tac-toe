@@ -467,6 +467,28 @@ def ev_reset_game(event) -> None:
 
 
 if __name__ == '__main__':
+    # no doctests in this module :)
+
+    # import python_ta.contracts
+    # python_ta.contracts.check_all_contracts()
+
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'extra-imports': ['browser', 'tictactoe'],
+    #     'allowed-io': [
+    #         'ev_board_size',
+    #         'ev_win_step',
+    #         'ev_player1_piece',
+    #         'ev_who_starts_first',
+    #         'ev_player_2_role',
+    #         'cell_click',
+    #         'check_winner',
+    #         'ev_start_game'
+    #     ],
+    #     'max-line-length': 100,
+    #     'disable': ['E1136', 'R0912', 'R0913']
+    # })
+
     # just for testing ;)
     print("https://sammdu.com")
 
