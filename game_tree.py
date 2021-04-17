@@ -113,29 +113,6 @@ class GameTree:
                 string += subtree.__str__(depth + 1)
             return string
 
-    # def insert_placement_sequence(
-    #     self,
-    #     placements: list[str],
-    #     win_score: float = 0.0
-    # ) -> None:
-    #     """
-    #     insert a sequence of piece placements into the current tree such that the first
-    #     plecement in the sequence forms a subtree in the current game tree, and the
-    #     subsequent placements recursively become descendents of the first spot
-    #     """
-    #     return None
-
-    # def _update_x_win_score(self) -> None:
-    #     """
-    #     recalculate the winning scoreability for x for the current game tree
-    #
-    #     assume each subtree has the correct `x_win_score`, and either:
-    #         - calculate the max of subtree scoreabilities, if the current node is `x`;
-    #           x acts as the maximizer of ``
-    #         - calculate the min of subtree scoreabilities
-    #     """
-    #     return None
-
 
 if __name__ == '__main__':
     import doctest

@@ -270,7 +270,6 @@ def cell_hover(event: DOMEvent) -> None:
     """
     """
     target = event.target
-    # print(f"hover {target.attrs['name']}")
     which_player = Config.GAME_OBJS["game"].next_player
     piece = Config.PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(Config.PLAYER_1_PIECE)
     target.text = piece
@@ -280,7 +279,6 @@ def cell_unhover(event: DOMEvent) -> None:
     """
     """
     target = event.target
-    # print(f"hover {target.attrs['name']}")
     target.text = ''
 
 
@@ -288,7 +286,7 @@ def cell_click(event: DOMEvent) -> None:
     """
     """
     target = event.target
-    print(f"click {target.attrs['name']}")
+    print(f"Clicked {target.attrs['name']}")
     which_player = Config.GAME_OBJS["game"].next_player
     piece = Config.PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(Config.PLAYER_1_PIECE)
 
@@ -360,6 +358,7 @@ def check_winner(game: ttt.GameState) -> bool:
 
     # if no winners, announce the next player's turn
     else:
+        print(f"Player {game.next_player[-1]}'s turn.")
         dom['game_status'].html = f"""
             Player {game.next_player[-1]}'s turn.
         """
@@ -376,9 +375,7 @@ def ev_game_round(event: DOMEvent) -> None:
     game = Config.GAME_OBJS["game"]
     player = Config.GAME_OBJS[game.next_player]
 
-    # print(player)
-
-    # when we start a fresh game
+    # when we start a fresh game and AI starts first
     if target.attrs['name'] == "start" and player != "human":
         piece, spot = player.return_move(game, None)
         game.place_piece(piece, spot)
@@ -399,11 +396,9 @@ def ev_game_round(event: DOMEvent) -> None:
 
     # make the next move if the next player is not human
     player_next = Config.GAME_OBJS[game.next_player]
-    # print(f"Next player: {game.next_player}\nNext player obj: {player_next}")
     if player_next != "human":
         piece, spot = player_next.return_move(game, game.move_history[-1])
         game.place_piece(piece, spot)
-        print(game._board)
         draw_piece(piece, spot)
 
     # check for winners again

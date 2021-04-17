@@ -336,7 +336,7 @@ class AIMinimaxPlayer(Player):
             self._depth = game.get_side_length()
         else:
             # hard mode will let the algorithm search 2 * the board's side length
-            self._depth = game.get_side_length() * 2
+            self._depth = game.get_side_length() + 1
 
         if prev_move is None:
             for spot in game.empty_spots:
@@ -355,16 +355,16 @@ class AIMinimaxPlayer(Player):
         subtrees = self._tree.get_subtrees()
         self._minimax(self._tree, game, self._depth, self._piece)
 
-        print(f"""
-            Choice:\n{[(subtree.placement, subtree.x_win_score)
-            for subtree in subtrees]}
-        """)
-
         # return the max placement or
         if self._piece == 'x':
-            return self._piece, max(subtrees, key=lambda s: s.x_win_score).placement
+            spot_choice = max(subtrees, key=lambda s: s.x_win_score).placement
         else:
-            return self._piece, min(subtrees, key=lambda s: s.x_win_score).placement
+            spot_choice = min(subtrees, key=lambda s: s.x_win_score).placement
+
+        # advance my tree after I have made my decision
+        self._tree = self._tree.find_subtree_by_spot(spot_choice)
+
+        return self._piece, spot_choice
 
 
 def role_to_player(role: str, piece: str) -> Player:
