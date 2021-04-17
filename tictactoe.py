@@ -27,6 +27,7 @@ SOFTWARE.
 from __future__ import annotations
 from typing import Optional
 import random
+import copy
 import game_tree as gt
 
 
@@ -131,7 +132,9 @@ class GameState():
         return the game state copy object
         """
         next_player = 'p2' if self.next_player == 'p1' else 'p1'
-        new_game = GameState(self._board, next_player, self.move_history)
+        new_board = copy.deepcopy(self._board)
+        new_hist = copy.deepcopy(self.move_history)
+        new_game = GameState(new_board, next_player, new_hist)
         new_game.place_piece(piece, spot)
         return new_game
 
@@ -181,6 +184,7 @@ class GameState():
 ################################################################################
 # Player Classes
 ################################################################################
+
 class Player:
     """
     An abstract class representing a Tic Tac Toe player.
@@ -254,9 +258,9 @@ class AIMinimaxPlayer(Player):
         """
         piece = game.get_winning_piece()
         if piece == 'x':
-            return 1 * game.empty_spots
+            return 1 * len(game.empty_spots)
         elif piece == 'o':
-            return -1 * game.empty_spots
+            return -1 * len(game.empty_spots)
         else:
             return 0
 
@@ -271,10 +275,13 @@ class AIMinimaxPlayer(Player):
             score = self._score_node(mock_game)
             node.add_subtree(gt.GameTree(spot, not node.is_x_move, score))
 
-    def _minimax(self, tree: gt.GameTree, game: GameState, depth: int) -> int:
+    def _minimax(self, tree: gt.GameTree, game: GameState, depth: int, piece: str) -> int:
         """
         """
-        assert tree.placement is not None
+        assert piece in {'x', 'o'}
+
+        print(f"Game board going into minimax:\n{game._board}")
+        print(f"Game tree going into minimax:\n{tree}\n")
 
         # if we get a winner, or reach the depth limit, or reach a tie, return score;
         # static evaluation
@@ -282,16 +289,20 @@ class AIMinimaxPlayer(Player):
             tree.x_win_score = self._score_node(game)
 
         # maximizer, 'x'
-        elif self._piece == 'x':
+        elif piece == 'x':
             max_score = -1 * (game.get_side_length() ** 2) - 1
             subtrees = tree.get_subtrees()
             # generate subtrees if depth is not reached but no more subtrees are available
             if depth != 0 and subtrees == []:
+                print("x: Ran out of depth, make more trees")
                 self._gen_subtrees(tree, game)
             # iterate through each subtree, compute the sub score, and maximize
+            print(f"x: Current tree before iter:\n{tree}")
             for subtree in subtrees:
-                mock_game = game.copy_and_place_piece('o', subtree.placement)
-                self._minimax(subtree, mock_game, depth - 1)
+                print(f"x: game board before copy:\n{game._board}")
+                print(f"x: Subtree before copy:\n{subtree}\n")
+                mock_game = game.copy_and_place_piece('x', subtree.placement)
+                self._minimax(subtree, mock_game, depth - 1, 'o')
                 max_score = max(max_score, subtree.x_win_score)
             tree.x_win_score = max_score
 
@@ -301,15 +312,19 @@ class AIMinimaxPlayer(Player):
             subtrees = tree.get_subtrees()
             # generate subtrees if depth is not reached but no more subtrees are available
             if depth != 0 and subtrees == []:
+                print("o: Ran out of depth, make more trees")
                 self._gen_subtrees(tree, game)
             # iterate through each subtree, compute the sub score, and minimize
+            print(f"o: Current tree before iter:\n{tree}")
             for subtree in subtrees:
-                mock_game = game.copy_and_place_piece('x', subtree.placement)
-                self._minimax(subtree, mock_game, depth - 1)
+                print(f"o: game board before copy:\n{game._board}")
+                print(f"o: Subtree before copy:\n{subtree}\n")
+                mock_game = game.copy_and_place_piece('o', subtree.placement)
+                self._minimax(subtree, mock_game, depth - 1, 'x')
                 min_score = min(min_score, subtree.x_win_score)
             tree.x_win_score = min_score
 
-    def return_move(self, game: GameState, prev_move: str) -> tuple[str, str]:
+    def return_move(self, game: GameState, prev_move: Optional[str]) -> tuple[str, str]:
         """
         return the game piece {'x', 'o'} and a move in the given game state by the Minimax
         algorithm
@@ -322,30 +337,32 @@ class AIMinimaxPlayer(Player):
             # easy mode will let the algorithm only search 1 step further than the board's
             # side length
             self._depth = 1 + game.get_side_length()
+            print(f"[!] set depth to be {self._depth}")
         else:
             # hard mode will let the algorithm search 2 * the board's side length
             self._depth = 2 * game.get_side_length()
+            print(f"[!] set depth to be {self._depth}")
 
         if prev_move is None:
             for spot in game.empty_spots:
                 self._tree.add_subtree(gt.GameTree(spot, self.is_x, 0))
+            print(f"Initial subtrees:\n{self._tree}")
         else:
+            print("SHOULD NOT BE HERE!!! 342")
             # update the game tree to start from the previous move made
             self._tree = self._tree.find_subtree_by_spot(prev_move)
 
         # calculate the minimax score for each subtree
         subtrees = self._tree.get_subtrees()
-        for subtree in subtrees:
-            self._minimax(subtree, game, self._depth)
+        # for subtree in subtrees:
+        #     self._minimax(subtree, game, self._depth - 1)
+        self._minimax(self._tree, game, self._depth, self._piece)
 
         # return the max placement or
         if self._piece == 'x':
             return self._piece, max(subtrees, key=lambda s: s.x_win_score).placement
         else:
             return self._piece, min(subtrees, key=lambda s: s.x_win_score).placement
-
-
-# px = AIMinimaxPlayer('x', 'easy')
 
 
 def role_to_player(role: str, piece: str) -> Player:
@@ -405,6 +422,26 @@ def init_game(
     game.next_player = start_first
 
     return game, p1, p2
+
+
+g, p1, p2 = init_game(
+    board_side=3,
+    p1_piece='o',
+    start_first='p2',
+    p2_role="ai_easy",
+    p1_role='human'
+)
+
+g._board
+g.move_history
+g.next_player
+g.empty_spots
+
+p2._piece
+p2.is_x
+p2.difficulty
+
+p2.return_move(g, None)
 
 
 if __name__ == '__main__':

@@ -68,7 +68,7 @@ class GameTree:
         >>> gt.is_x_move
         True
         >>> gt.x_win_score
-        0.0
+        0
         """
         self.placement = placement
         self.is_x_move = is_x_move
@@ -104,7 +104,7 @@ class GameTree:
         """
         piece = 'x' if self.is_x_move else 'o'
         string = ('    ' * depth) + "  `---" + \
-            f"[{piece} -> ({self.placement[0]}, {self.placement[1]})]:" + \
+            f"[{piece} -> ({self.placement})]:" + \
             f" {self.x_win_score} \n"
         if self._subtrees == []:
             return string
