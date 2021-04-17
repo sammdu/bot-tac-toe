@@ -242,29 +242,40 @@ class AIMinimaxPlayer(Player):
         # initialize an empty game tree with my piece, and a 0 x win score
         self._tree = gt.GameTree(None, self.is_x, 0)
 
-    # def _gen_subtrees(self, levels: int) -> None:
-    #     """
-    #     generate the given levels of subtrees below the existing game tree
-    #     to extend the game tree further
-    #     """
-    #     nodes = [self._tree]
-    #     for node in nodes:
-    #
-    #
-    #     return
+    @staticmethod
+    def _score_node(game: GameState) -> int:
+        """
+        return a Minimax utility score based on the given game state
+
+        The idea of multiplying empty spots with the scoring constant {1, -1, 0} came from
+        this video: https://youtu.be/fT3YWCKvuQE
+        NO OTHER IDEAS OR CODE CAME FROM THE ABOVE SOURCE
+        """
+        piece = game.get_winning_piece()
+        if piece == 'x':
+            return 1 * game.empty_spots
+        elif piece == 'o':
+            return -1 * game.empty_spots
+        else:
+            return 0
+
+    def _gen_subtrees(self, node: gt.GameTree, game: GameState) -> None:
+        """
+        generate subtrees for a given node based on the available moves in the game
+        """
+        for spot in game.empty_spots:
+            piece = 'o' if node.is_x_move else 'x'
+            mock_game = game.copy_and_place_piece(piece, spot)
+            score = self._score_node(mock_game)
+            node.add_subtree(gt.GameTree(spot, not node.is_x_move, score))
 
     def _minimax(self, game: GameState, spot: str, depth: int) -> int:
         """
         """
         # if we get a winner, or reach the depth or a tie, return score;
         # static evaluation
-        if depth == 0 or (piece := game.get_winning_piece()):
-            if piece == 'x':
-                return 1 * game.empty_spots
-            elif piece == 'o':
-                return -1 * game.empty_spots
-            else:
-                return 0
+        if depth == 0 or game.get_winning_piece():
+            return self._score_node(game)
 
         # maximizer
         if self._piece == 'x':
