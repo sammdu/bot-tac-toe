@@ -369,7 +369,7 @@ def ev_game_round(event: DOMEvent) -> None:
     game = Config.GAME_OBJS["game"]
     player = Config.GAME_OBJS[game.next_player]
 
-    print(player)
+    # print(player)
 
     # when we start a fresh game
     if target.attrs['name'] == "start" and player != "human":
@@ -392,6 +392,7 @@ def ev_game_round(event: DOMEvent) -> None:
 
     # make the next move if the next player is not human
     player_next = Config.GAME_OBJS[game.next_player]
+    # print(f"Next player: {game.next_player}\nNext player obj: {player_next}")
     if player_next != "human":
         piece, spot = player_next.return_move(game, game.move_history[-1])
         game.place_piece(piece, spot)

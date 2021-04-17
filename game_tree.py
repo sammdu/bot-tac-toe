@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Any
 
 
 class GameTree:
@@ -51,7 +51,7 @@ class GameTree:
     #  - _subtrees:
     #      the subtrees of this tree, which represent the game trees after a possible
     #      placement by the current player
-    _subtrees: list[GameTree]
+    _subtrees: list
 
     def __init__(
         self,
@@ -75,13 +75,13 @@ class GameTree:
         self._subtrees = []
         self.x_win_score = x_win_score
 
-    def get_subtrees(self) -> list[GameTree]:
+    def get_subtrees(self) -> list:
         """
         return all subtrees under the current game tree
         """
         return self._subtrees
 
-    def find_subtree_by_spot(self, spot: str) -> Optional[GameTree]:
+    def find_subtree_by_spot(self, spot: str) -> Any:
         """
         find a particular subtree whose node is the given spot
         this is only a depth-1 enumeration of the subtrees of the given node, and not an
@@ -92,7 +92,7 @@ class GameTree:
                 return subtree
         return None
 
-    def add_subtree(self, subtree: GameTree) -> None:
+    def add_subtree(self, subtree: Any) -> None:
         """
         append the given subtree to the current game tree's list of subtrees
         """

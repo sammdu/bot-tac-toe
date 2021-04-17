@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Any
 import random
 import copy
 import game_tree as gt
@@ -43,7 +43,7 @@ def empty_board(side: int) -> None:
     [['', '', ''], ['', '', ''], ['', '', '']]
     """
     board = []
-    for i in range(side):
+    for _ in range(side):
         row = [''] * side
         board.append(row)
     return board
@@ -73,14 +73,14 @@ class GameState():
     _board_side: int
 
     def __init__(
-        self,
-        board: list[list[str]],
-        next_player: str = 'p1',
-        move_hist: list[Optional[str]] = []
+            self,
+            board: list[list[str]],
+            next_player: str = 'p1',
+            move_hist: Optional[list[str]] = None
     ) -> None:
         self._board = board
         self._board_side = len(self._board)  # calculate the side length of the game board
-        self.move_history = move_hist
+        self.move_history = move_hist if move_hist is not None else []
         self.next_player = next_player
         self.empty_spots = self._find_empty_spots()
 
@@ -126,7 +126,7 @@ class GameState():
         else:
             raise ValueError(f"[!] Given spot {spot} is not empty.")
 
-    def copy_and_place_piece(self, piece: str, spot: str) -> GameState:
+    def copy_and_place_piece(self, piece: str, spot: str) -> Any:
         """
         make a copy of the current game state, make a move in the game state copy, and
         return the game state copy object
@@ -154,9 +154,9 @@ class GameState():
 
         # if no winners in rows, check each column
         for col_num in range(side):
-            if all(row[col_num] == 'x' for row in self._board):
+            if all(row2[col_num] == 'x' for row2 in self._board):
                 return 'x'
-            elif all(row[col_num] == 'o' for row in self._board):
+            elif all(row2[col_num] == 'o' for row2 in self._board):
                 return 'o'
 
         # if still no winners, check the two diagonals
@@ -193,11 +193,11 @@ class Player:
     #   - _piece: game piece of the current player, either `x` or `o`
     _piece: str
 
-    def __init__(self, piece) -> None:
+    def __init__(self, piece: str) -> None:
         assert piece in {'x', 'o'}
         self._piece = piece
 
-    def return_move(self, game: GameState, prev_move: str):
+    def return_move(self, game: GameState, prev_move: str) -> tuple[str, str]:
         """
         return a move in the given game state
 
@@ -239,7 +239,7 @@ class AIMinimaxPlayer(Player):
     _tree: gt.GameTree
     _depth: int
 
-    def __init__(self, piece, difficulty) -> None:
+    def __init__(self, piece: str, difficulty: str) -> None:
         super().__init__(piece)
         self.difficulty = difficulty
         self.is_x = True if piece == 'x' else False
@@ -280,9 +280,6 @@ class AIMinimaxPlayer(Player):
         """
         assert piece in {'x', 'o'}
 
-        print(f"Game board going into minimax:\n{game._board}")
-        print(f"Game tree going into minimax:\n{tree}\n")
-
         # if we get a winner, or reach the depth limit, or reach a tie, return score;
         # static evaluation
         if depth == 0 or game.get_winning_piece():
@@ -294,13 +291,9 @@ class AIMinimaxPlayer(Player):
             subtrees = tree.get_subtrees()
             # generate subtrees if depth is not reached but no more subtrees are available
             if depth != 0 and subtrees == []:
-                print("x: Ran out of depth, make more trees")
                 self._gen_subtrees(tree, game)
             # iterate through each subtree, compute the sub score, and maximize
-            print(f"x: Current tree before iter:\n{tree}")
             for subtree in subtrees:
-                print(f"x: game board before copy:\n{game._board}")
-                print(f"x: Subtree before copy:\n{subtree}\n")
                 mock_game = game.copy_and_place_piece('x', subtree.placement)
                 self._minimax(subtree, mock_game, depth - 1, 'o')
                 max_score = max(max_score, subtree.x_win_score)
@@ -312,13 +305,9 @@ class AIMinimaxPlayer(Player):
             subtrees = tree.get_subtrees()
             # generate subtrees if depth is not reached but no more subtrees are available
             if depth != 0 and subtrees == []:
-                print("o: Ran out of depth, make more trees")
                 self._gen_subtrees(tree, game)
             # iterate through each subtree, compute the sub score, and minimize
-            print(f"o: Current tree before iter:\n{tree}")
             for subtree in subtrees:
-                print(f"o: game board before copy:\n{game._board}")
-                print(f"o: Subtree before copy:\n{subtree}\n")
                 mock_game = game.copy_and_place_piece('o', subtree.placement)
                 self._minimax(subtree, mock_game, depth - 1, 'x')
                 min_score = min(min_score, subtree.x_win_score)
@@ -336,27 +325,33 @@ class AIMinimaxPlayer(Player):
         if self.difficulty == "easy":
             # easy mode will let the algorithm only search 1 step further than the board's
             # side length
-            self._depth = 1 + game.get_side_length()
-            print(f"[!] set depth to be {self._depth}")
+            self._depth = round(1.5 * game.get_side_length())
+            # print(f"[!] set depth to be {self._depth}")
         else:
             # hard mode will let the algorithm search 2 * the board's side length
-            self._depth = 2 * game.get_side_length()
-            print(f"[!] set depth to be {self._depth}")
+            self._depth = game.get_side_length() ** 2
+            # print(f"[!] set depth to be {self._depth}")
 
         if prev_move is None:
             for spot in game.empty_spots:
                 self._tree.add_subtree(gt.GameTree(spot, self.is_x, 0))
-            print(f"Initial subtrees:\n{self._tree}")
+            # print(f"Initial subtrees:\n{self._tree}")
         else:
-            print("SHOULD NOT BE HERE!!! 342")
+            # print("PREV MOVE IS NOT NONE")
             # update the game tree to start from the previous move made
-            self._tree = self._tree.find_subtree_by_spot(prev_move)
+            if prevtree := self._tree.find_subtree_by_spot(prev_move) is None:
+                self._tree.add_subtree(
+                    prevtree := gt.GameTree(prev_move, not self.is_x, 0)
+                )
+            self._tree = prevtree
 
         # calculate the minimax score for each subtree
         subtrees = self._tree.get_subtrees()
         # for subtree in subtrees:
         #     self._minimax(subtree, game, self._depth - 1)
         self._minimax(self._tree, game, self._depth, self._piece)
+
+        print(f"Choice:\n{[subtree.x_win_score for subtree in subtrees]}")
 
         # return the max placement or
         if self._piece == 'x':
@@ -394,11 +389,11 @@ def piece_not(piece: str) -> str:
 
 
 def init_game(
-    board_side: int,
-    p1_piece: str,
-    start_first: str,
-    p2_role: str,
-    p1_role: str = 'human'
+        board_side: int,
+        p1_piece: str,
+        start_first: str,
+        p2_role: str,
+        p1_role: str = 'human'
 ) -> tuple[GameState, Player, Player]:
     """
     initialize a Tic Tac Toe game on a board of given side length `board_side`;
@@ -424,26 +419,39 @@ def init_game(
     return game, p1, p2
 
 
-g, p1, p2 = init_game(
-    board_side=3,
-    p1_piece='o',
-    start_first='p2',
-    p2_role="ai_easy",
-    p1_role='human'
-)
-
-g._board
-g.move_history
-g.next_player
-g.empty_spots
-
-p2._piece
-p2.is_x
-p2.difficulty
-
-p2.return_move(g, None)
+# g, p1, p2 = init_game(
+#     board_side=3,
+#     p1_piece='x',
+#     start_first='p1',
+#     p2_role="ai_hard",
+#     p1_role='human'
+# )
+#
+# g._board
+# g.move_history
+# g.next_player
+# g.empty_spots
+#
+# g.place_piece('x', '00')
+#
+# p2._piece
+# p2.is_x
+# p2.difficulty
+#
+# p2.return_move(g, None)
 
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+    import python_ta.contracts
+    python_ta.contracts.check_all_contracts()
+
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['random', 'copy', 'game_tree'],
+        'allowed-io': ['return_move'],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
