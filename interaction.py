@@ -33,7 +33,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from browser import document as dom
-from browser import html, DOMEvent, window, timer
+from browser import html, DOMEvent, window
 import tictactoe as ttt
 
 
@@ -53,16 +53,27 @@ class ThemeColor:
 # GLOBAL VARIABLES
 class Config:
     """
-    global configurations to keep track of
+    global configurations (a total of 8) to keep track of
 
     Class Attributes:
-        -
+        - BOARD_SIDE_LENGTH: the side length of the game board
+        - WINNING_STEP_LEN: the number of adjacent pieces that will result in a win;
+          currently unused due to implementation complexity and timme constraint, will be
+          used in the future
+        - PLAYER_1_PIECE: the game piece used by player 1, either 'x' or 'o'
+        - START_FIRST: which player starts first, either 'p1' or 'p2'
+        - PLAYER_2_ROLE: whether player 2 is another human or some kind of AI player
+        - PLAYER_1_COLOR: the color of player 1's game piece; always is Theme purple
+        - PLAYER_2_COLOR: the color of player 2's game piece; is Theme orange if player 2
+          is human, is Theme green if player 2 is an AI
+        - GAME_OBJS: a dictionary containing the game object as well as the two player
+          objects; can be obtained by any function that needs it
     """
     BOARD_SIDE_LENGTH: int = 3
     WINNING_STEP_LEN: int = 3  # currently unused but can be used when extended
     PLAYER_1_PIECE: str = 'x'
     START_FIRST: str = "p1"  # p1 -> player 1; p2 -> player 2; nd -> not determined
-    PLAYER_2_ROLE: str = "ai_random"
+    PLAYER_2_ROLE: str = "ai_easy"
     PLAYER_1_COLOR: str = ThemeColor.purple
     PLAYER_2_COLOR: str = ThemeColor.green
     GAME_OBJS: dict = {}
@@ -95,8 +106,6 @@ def draw_board(table: html.TABLE, side: int) -> None:
     """
 
     # update the global side length winning step length
-    # global BOARD_SIDE_LENGTH
-    # global WINNING_STEP_LEN
     Config.BOARD_SIDE_LENGTH = side
     Config.WINNING_STEP_LEN = side
 
@@ -111,7 +120,6 @@ def switch_selection(
     `button_class`, and darken the `selected` button
     changes the foreground or background collor based on the `colortype` option
     """
-
     # clear background color for all buttons in the `button_class`
     for b in dom.select(button_class):
         if b.name != selected.name:
@@ -133,8 +141,8 @@ def disable_button(button: html.BUTTON) -> None:
 
 def enable_button(button: html.BUTTON) -> None:
     """
-    helper function to disable a specific button and set its style to show the
-    disabled state
+    helper function to enable a specific button and set its style to show the
+    enabled state
     """
     button.classList.remove("btn-dis")
     button.disabled = False
@@ -164,9 +172,6 @@ def ev_board_size(event: DOMEvent) -> None:
             enable_button(b)
             b.attrs["style"] = f"background-color: {ThemeColor.unsel};"
 
-    # bind cell functions for each cell
-    # bind_cells()
-
     # log the change in the broswer console
     print(f"Changed board side length to: {new_side_len}")
 
@@ -174,11 +179,11 @@ def ev_board_size(event: DOMEvent) -> None:
 def ev_win_step(event: DOMEvent) -> None:
     """
     [!] this function is currently unused, but may be used in the future
+
     change the number of steps required to win the game based on the
-    given button event
-    write the result into the configuration variable `Config.WINNING_STEP_LEN`
+    given button event; write the result into the configuration variable
+    `Config.WINNING_STEP_LEN`
     """
-    # global WINNING_STEP_LEN
     target = event.target
 
     # change the button colors to reflect user selection
@@ -194,10 +199,9 @@ def ev_win_step(event: DOMEvent) -> None:
 def ev_player1_piece(event: DOMEvent) -> None:
     """
     change the game piece (x/o) used by player 1 based on the given
-    button event
+    button event;
     write the result into the configuration variable `Config.PLAYER_1_PIECE`
     """
-    # global PLAYER_1_PIECE
     target = event.target
 
     # change the button colors to reflect user selection
@@ -216,7 +220,6 @@ def ev_who_starts_first(event: DOMEvent) -> None:
     by a random draw, based on the given button event
     write the result into the configuration variable `Config.START_FIRST`
     """
-    # global START_FIRST
     target = event.target
 
     # change the button colors to reflect user selection
@@ -237,8 +240,6 @@ def ev_player_2_role(event: DOMEvent) -> None:
     also adjust `Config.PLAYER_2_COLOR` to be green if player 2 is an AI, or orange if
     player 2 is a human
     """
-    # global PLAYER_2_ROLE
-    # global PLAYER_2_COLOR
     target = event.target
 
     # find the selected option
@@ -259,6 +260,7 @@ def ev_player_2_role(event: DOMEvent) -> None:
 
 def bind_cells() -> None:
     """
+    bind all cells on the game board UI to their event functions
     """
     for c in dom.select('.cell'):
         c.bind("mouseover", cell_hover)
@@ -268,6 +270,8 @@ def bind_cells() -> None:
 
 def cell_hover(event: DOMEvent) -> None:
     """
+    event function that responds to a cell when a mouse cursor hovers
+    displays a grayed out game piece on top of the hovered cell
     """
     target = event.target
     which_player = Config.GAME_OBJS["game"].next_player
@@ -277,6 +281,8 @@ def cell_hover(event: DOMEvent) -> None:
 
 def cell_unhover(event: DOMEvent) -> None:
     """
+    event function that responds to a cell when a mouse cursor NO LONGER hovers
+    removes the grayed out game piece on top of the hovered cell
     """
     target = event.target
     target.text = ''
@@ -284,22 +290,30 @@ def cell_unhover(event: DOMEvent) -> None:
 
 def cell_click(event: DOMEvent) -> None:
     """
+    event function that responds to a cell when being clicked
+    permanently place the game piece in the cell with the correct color, unbinds all the
+    event functions on this cell, and trigger a game round
     """
     target = event.target
     print(f"Clicked {target.attrs['name']}")
+
+    # determine the player that clicked this cell, and its game piece
     which_player = Config.GAME_OBJS["game"].next_player
     piece = Config.PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(Config.PLAYER_1_PIECE)
 
+    # place game piece and unbind event functions
     target.text = piece
     target.unbind("click", cell_click)
     target.unbind("mouseout", cell_unhover)
     target.unbind("mouseover", cell_hover)
 
+    # set the correct color for the placed game piece
     if which_player == 'p1':
         target.attrs["style"] = f"color: {Config.PLAYER_1_COLOR};"
     else:
         target.attrs["style"] = f"color: {Config.PLAYER_2_COLOR};"
 
+    # trigger a round of game
     ev_game_round(event)
 
 
@@ -310,9 +324,13 @@ def draw_piece(piece: str, spot: str):
     for c in dom.select('.cell'):
         if c.attrs["name"] == spot:
             c.text = piece
+
+            # unbind event functions once the piece has been drawn
             c.unbind("click", cell_click)
             c.unbind("mouseout", cell_unhover)
             c.unbind("mouseover", cell_hover)
+
+            # give the piece its correct color
             if piece == Config.PLAYER_1_PIECE:
                 c.attrs["style"] = f"color: {Config.PLAYER_1_COLOR};"
             else:
@@ -327,6 +345,7 @@ def check_winner(game: ttt.GameState) -> bool:
     """
     # check for winners
     if winning_piece := game.get_winning_piece():
+
         # find out whether player 1 or 2 won the game
         if winning_piece not in {'x', 'o'}:
             announce_txt = "It's a tie!"
@@ -343,7 +362,6 @@ def check_winner(game: ttt.GameState) -> bool:
                 Press the Reset button to start a new game.
             </span>
         """
-        # dom['game_status'].attrs["style"] = ""
 
         # disable game board cells
         for c in dom.select('.cell'):
@@ -372,11 +390,14 @@ def ev_game_round(event: DOMEvent) -> None:
     can be triggered by the start_game function or a player making a move
     """
     target = event.target
+
+    # fetch the game object as well as the next player's object
     game = Config.GAME_OBJS["game"]
     player = Config.GAME_OBJS[game.next_player]
 
     # when we start a fresh game and AI starts first
     if target.attrs['name'] == "start" and player != "human":
+        # obtain the player's move, place the game piece, and draw it on the UI
         piece, spot = player.return_move(game, None)
         game.place_piece(piece, spot)
         draw_piece(piece, spot)
@@ -397,6 +418,7 @@ def ev_game_round(event: DOMEvent) -> None:
     # make the next move if the next player is not human
     player_next = Config.GAME_OBJS[game.next_player]
     if player_next != "human":
+        # obtain the player's move, place the game piece, and draw it on the UI
         piece, spot = player_next.return_move(game, game.move_history[-1])
         game.place_piece(piece, spot)
         draw_piece(piece, spot)
@@ -409,9 +431,10 @@ def ev_start_game(event: DOMEvent) -> None:
     """
     start the game by calling the initializer and calling the first round
     """
+    # log the start of the game in the browser console
     print("Game started.")
 
-    # global GAME_OBJS
+    # initialize the game by calling the initializer in the tictactoe module
     game, p1, p2 = ttt.init_game(
         Config.BOARD_SIDE_LENGTH,
         Config.PLAYER_1_PIECE,
@@ -432,6 +455,7 @@ def ev_start_game(event: DOMEvent) -> None:
     event.target.attrs["style"] = "display: none;"
     dom["btn_reset"].attrs["style"] = ""
 
+    # trigger the first round in the game
     ev_game_round(event)
 
 
@@ -443,6 +467,7 @@ def ev_reset_game(event) -> None:
 
 
 if __name__ == '__main__':
+    # just for testing ;)
     print("https://sammdu.com")
 
     # draw a 3x3 board by default
