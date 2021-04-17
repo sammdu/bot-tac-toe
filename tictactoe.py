@@ -247,8 +247,9 @@ class AIMinimaxPlayer(Player):
         """
         return a Minimax utility score based on the given game state
 
-        The idea of multiplying empty spots with the scoring constant {1, -1, 0} came from
-        this video: https://youtu.be/fT3YWCKvuQE
+        The idea of multiplying the number of empty spots with the scoring constant
+        {1, -1, 0} to reward wins made in fewer steps came from this video:
+            https://youtu.be/fT3YWCKvuQE
         NO OTHER IDEAS OR CODE CAME FROM THE ABOVE SOURCE
         """
         piece = game.get_winning_piece()
@@ -263,30 +264,50 @@ class AIMinimaxPlayer(Player):
         """
         generate subtrees for a given node based on the available moves in the game
         """
+        assert node.get_subtrees() == []
         for spot in game.empty_spots:
             piece = 'o' if node.is_x_move else 'x'
             mock_game = game.copy_and_place_piece(piece, spot)
             score = self._score_node(mock_game)
             node.add_subtree(gt.GameTree(spot, not node.is_x_move, score))
 
-    def _minimax(self, game: GameState, spot: str, depth: int) -> int:
+    def _minimax(self, tree: gt.GameTree, game: GameState, depth: int) -> int:
         """
         """
-        # if we get a winner, or reach the depth or a tie, return score;
+        assert tree.placement is not None
+
+        # if we get a winner, or reach the depth limit, or reach a tie, return score;
         # static evaluation
         if depth == 0 or game.get_winning_piece():
-            return self._score_node(game)
+            tree.x_win_score = self._score_node(game)
 
-        # maximizer
-        if self._piece == 'x':
-            max_score = -1 * (game.get_side_length() ** 2)
-            for subtree in game.get_subtrees():
+        # maximizer, 'x'
+        elif self._piece == 'x':
+            max_score = -1 * (game.get_side_length() ** 2) - 1
+            subtrees = tree.get_subtrees()
+            # generate subtrees if depth is not reached but no more subtrees are available
+            if depth != 0 and subtrees == []:
+                self._gen_subtrees(tree, game)
+            # iterate through each subtree, compute the sub score, and maximize
+            for subtree in subtrees:
                 mock_game = game.copy_and_place_piece('o', subtree.placement)
-                sub_score = _minimax(mock_game, )
+                self._minimax(subtree, mock_game, depth - 1)
+                max_score = max(max_score, subtree.x_win_score)
+            tree.x_win_score = max_score
 
-        # minimizer
+        # minimizer, 'o'
         else:
-            pass
+            min_score = 1 * (game.get_side_length() ** 2) + 1
+            subtrees = tree.get_subtrees()
+            # generate subtrees if depth is not reached but no more subtrees are available
+            if depth != 0 and subtrees == []:
+                self._gen_subtrees(tree, game)
+            # iterate through each subtree, compute the sub score, and minimize
+            for subtree in subtrees:
+                mock_game = game.copy_and_place_piece('x', subtree.placement)
+                self._minimax(subtree, mock_game, depth - 1)
+                min_score = min(min_score, subtree.x_win_score)
+            tree.x_win_score = min_score
 
     def return_move(self, game: GameState, prev_move: str) -> tuple[str, str]:
         """
@@ -312,7 +333,19 @@ class AIMinimaxPlayer(Player):
             # update the game tree to start from the previous move made
             self._tree = self._tree.find_subtree_by_spot(prev_move)
 
-        return self._piece, spot
+        # calculate the minimax score for each subtree
+        subtrees = self._tree.get_subtrees()
+        for subtree in subtrees:
+            self._minimax(subtree, game, self._depth)
+
+        # return the max placement or
+        if self._piece == 'x':
+            return self._piece, max(subtrees, key=lambda s: s.x_win_score).placement
+        else:
+            return self._piece, min(subtrees, key=lambda s: s.x_win_score).placement
+
+
+# px = AIMinimaxPlayer('x', 'easy')
 
 
 def role_to_player(role: str, piece: str) -> Player:

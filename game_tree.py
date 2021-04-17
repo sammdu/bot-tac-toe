@@ -43,9 +43,9 @@ class GameTree:
         - is_x_move:
         - x_win_prob:
     """
-    placement: str
+    placement: Optional[str]
     is_x_move: bool
-    x_win_score: float
+    x_win_score: int
 
     # Private Instance Attributes:
     #  - _subtrees:
@@ -55,7 +55,7 @@ class GameTree:
 
     def __init__(
         self,
-        placement: str = None,
+        placement: Optional[str] = None,
         is_x_move: bool = True,
         x_win_score: int = 0
     ) -> None:
