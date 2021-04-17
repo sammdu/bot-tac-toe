@@ -76,7 +76,7 @@ class GameState():
             self,
             board: list[list[str]],
             next_player: str = 'p1',
-            move_hist: Optional[list[str]] = None
+            move_hist: Optional[list] = None
     ) -> None:
         self._board = board
         self._board_side = len(self._board)  # calculate the side length of the game board
@@ -275,8 +275,10 @@ class AIMinimaxPlayer(Player):
             score = self._score_node(mock_game)
             node.add_subtree(gt.GameTree(spot, not node.is_x_move, score))
 
-    def _minimax(self, tree: gt.GameTree, game: GameState, depth: int, piece: str) -> int:
+    def _minimax(self, tree: gt.GameTree, game: GameState, depth: int, piece: str) -> None:
         """
+        perform the minimax algorithm recursively to a given depth
+        each to to the given gepth will contain a calculated minimax score as a result
         """
         assert piece in {'x', 'o'}
 
@@ -294,8 +296,11 @@ class AIMinimaxPlayer(Player):
                 self._gen_subtrees(tree, game)
             # iterate through each subtree, compute the sub score, and maximize
             for subtree in subtrees:
-                mock_game = game.copy_and_place_piece('x', subtree.placement)
-                self._minimax(subtree, mock_game, depth - 1, 'o')
+                if subtree.placement not in game.move_history:
+                    mock_game = game.copy_and_place_piece('x', subtree.placement)
+                    self._minimax(subtree, mock_game, depth - 1, 'o')
+                else:
+                    self._minimax(subtree, game, depth - 1, 'o')
                 max_score = max(max_score, subtree.x_win_score)
             tree.x_win_score = max_score
 
@@ -308,8 +313,11 @@ class AIMinimaxPlayer(Player):
                 self._gen_subtrees(tree, game)
             # iterate through each subtree, compute the sub score, and minimize
             for subtree in subtrees:
-                mock_game = game.copy_and_place_piece('o', subtree.placement)
-                self._minimax(subtree, mock_game, depth - 1, 'x')
+                if subtree.placement not in game.move_history:
+                    mock_game = game.copy_and_place_piece('o', subtree.placement)
+                    self._minimax(subtree, mock_game, depth - 1, 'x')
+                else:
+                    self._minimax(subtree, game, depth - 1, 'x')
                 min_score = min(min_score, subtree.x_win_score)
             tree.x_win_score = min_score
 
@@ -323,32 +331,28 @@ class AIMinimaxPlayer(Player):
         """
         # set the search depth
         if self.difficulty == "easy":
-            # easy mode will let the algorithm only search 1 step further than the board's
-            # side length
-            self._depth = round(1.5 * game.get_side_length())
-            # print(f"[!] set depth to be {self._depth}")
+            # easy mode will let the algorithm only search 2 steps further than the
+            # board's side length
+            self._depth = game.get_side_length() + 1
         else:
             # hard mode will let the algorithm search 2 * the board's side length
-            self._depth = game.get_side_length() ** 2
-            # print(f"[!] set depth to be {self._depth}")
+            self._depth = game.get_side_length() * 2
 
         if prev_move is None:
             for spot in game.empty_spots:
                 self._tree.add_subtree(gt.GameTree(spot, self.is_x, 0))
-            # print(f"Initial subtrees:\n{self._tree}")
         else:
-            # print("PREV MOVE IS NOT NONE")
             # update the game tree to start from the previous move made
-            if prevtree := self._tree.find_subtree_by_spot(prev_move) is None:
-                self._tree.add_subtree(
-                    prevtree := gt.GameTree(prev_move, not self.is_x, 0)
-                )
+            prevtree = self._tree.find_subtree_by_spot(prev_move)
+            if prevtree is None:
+                prevtree = gt.GameTree(prev_move, not self.is_x, 0)
+                self._tree.add_subtree(prevtree)
             self._tree = prevtree
+
+        # print(f"Initial subtrees:\n{self._tree}")
 
         # calculate the minimax score for each subtree
         subtrees = self._tree.get_subtrees()
-        # for subtree in subtrees:
-        #     self._minimax(subtree, game, self._depth - 1)
         self._minimax(self._tree, game, self._depth, self._piece)
 
         print(f"Choice:\n{[subtree.x_win_score for subtree in subtrees]}")
@@ -408,15 +412,15 @@ def init_game(
     p2_piece = piece_not(p1_piece)
 
     # initialize players' classes
-    p1 = role_to_player(p1_role, p1_piece)
-    p2 = role_to_player(p2_role, p2_piece)
+    player1 = role_to_player(p1_role, p1_piece)
+    player2 = role_to_player(p2_role, p2_piece)
 
     # determine which player starts first if left up to random
     start_first = random.choice(['p1', 'p2']) if start_first == 'nd' else start_first
     # set the next player in the game state to be the first player
     game.next_player = start_first
 
-    return game, p1, p2
+    return game, player1, player2
 
 
 # g, p1, p2 = init_game(
@@ -445,13 +449,13 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
-    import python_ta.contracts
-    python_ta.contracts.check_all_contracts()
-
-    import python_ta
-    python_ta.check_all(config={
-        'extra-imports': ['random', 'copy', 'game_tree'],
-        'allowed-io': ['return_move'],
-        'max-line-length': 100,
-        'disable': ['E1136']
-    })
+    # import python_ta.contracts
+    # python_ta.contracts.check_all_contracts()
+    #
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'extra-imports': ['random', 'copy', 'game_tree'],
+    #     'allowed-io': ['return_move'],
+    #     'max-line-length': 100,
+    #     'disable': ['E1136']
+    # })

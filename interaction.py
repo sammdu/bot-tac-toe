@@ -291,14 +291,19 @@ def cell_click(event: DOMEvent) -> None:
     # print(f"click {target.attrs['name']}")
     which_player = Config.GAME_OBJS["game"].next_player
     piece = Config.PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(Config.PLAYER_1_PIECE)
+
     target.text = piece
     target.unbind("click", cell_click)
     target.unbind("mouseout", cell_unhover)
     target.unbind("mouseover", cell_hover)
+
     if which_player == 'p1':
         target.attrs["style"] = f"color: {Config.PLAYER_1_COLOR};"
     else:
         target.attrs["style"] = f"color: {Config.PLAYER_2_COLOR};"
+
+    print("Cell clicked and piece drawn")
+
     ev_game_round(event)
 
 
@@ -327,12 +332,16 @@ def check_winner(game: ttt.GameState) -> bool:
     # check for winners
     if winning_piece := game.get_winning_piece():
         # find out whether player 1 or 2 won the game
-        winner_num = 1 if winning_piece == Config.PLAYER_1_PIECE else 2
+        if winning_piece is None:
+            announce_txt = "It's a tie!"
+        else:
+            winner_num = 1 if winning_piece == Config.PLAYER_1_PIECE else 2
+            announce_txt = f"Player {winner_num} wins!"
 
         # announce the winner
         dom['game_status'].html = f"""
             <span style="color: #dd426e; display: inline;">
-                Player {winner_num} wins!
+                {announce_txt}
             </span><br>
             <span style="font-size: 0.7em; display: inline;">
                 Press the Reset button to start a new game.
@@ -373,12 +382,14 @@ def ev_game_round(event: DOMEvent) -> None:
 
     # when we start a fresh game
     if target.attrs['name'] == "start" and player != "human":
+        print("Game started by AI")
         piece, spot = player.return_move(game, None)
         game.place_piece(piece, spot)
         draw_piece(piece, spot)
 
     # when getting called by a human player, place the piece for the human
     elif "cell" in target.classList:
+        print("Round advanced by human")
         spot = target.attrs['name']
         if game.next_player == "p1":
             piece = Config.PLAYER_1_PIECE
