@@ -33,7 +33,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from browser import document as dom
-from browser import html, DOMEvent, window
+from browser import html, DOMEvent, window, timer
 import tictactoe as ttt
 
 
@@ -288,7 +288,7 @@ def cell_click(event: DOMEvent) -> None:
     """
     """
     target = event.target
-    # print(f"click {target.attrs['name']}")
+    print(f"click {target.attrs['name']}")
     which_player = Config.GAME_OBJS["game"].next_player
     piece = Config.PLAYER_1_PIECE if which_player == "p1" else ttt.piece_not(Config.PLAYER_1_PIECE)
 
@@ -301,8 +301,6 @@ def cell_click(event: DOMEvent) -> None:
         target.attrs["style"] = f"color: {Config.PLAYER_1_COLOR};"
     else:
         target.attrs["style"] = f"color: {Config.PLAYER_2_COLOR};"
-
-    print("Cell clicked and piece drawn")
 
     ev_game_round(event)
 
@@ -332,7 +330,7 @@ def check_winner(game: ttt.GameState) -> bool:
     # check for winners
     if winning_piece := game.get_winning_piece():
         # find out whether player 1 or 2 won the game
-        if winning_piece is None:
+        if winning_piece not in {'x', 'o'}:
             announce_txt = "It's a tie!"
         else:
             winner_num = 1 if winning_piece == Config.PLAYER_1_PIECE else 2
@@ -356,7 +354,7 @@ def check_winner(game: ttt.GameState) -> bool:
             c.unbind("mouseover", cell_hover)
 
         # log the winner in the browser console
-        print(f"Winner is Player {winner_num}!")
+        print(announce_txt)
 
         return True
 
@@ -382,14 +380,12 @@ def ev_game_round(event: DOMEvent) -> None:
 
     # when we start a fresh game
     if target.attrs['name'] == "start" and player != "human":
-        print("Game started by AI")
         piece, spot = player.return_move(game, None)
         game.place_piece(piece, spot)
         draw_piece(piece, spot)
 
     # when getting called by a human player, place the piece for the human
     elif "cell" in target.classList:
-        print("Round advanced by human")
         spot = target.attrs['name']
         if game.next_player == "p1":
             piece = Config.PLAYER_1_PIECE
@@ -407,6 +403,7 @@ def ev_game_round(event: DOMEvent) -> None:
     if player_next != "human":
         piece, spot = player_next.return_move(game, game.move_history[-1])
         game.place_piece(piece, spot)
+        print(game._board)
         draw_piece(piece, spot)
 
     # check for winners again

@@ -333,7 +333,7 @@ class AIMinimaxPlayer(Player):
         if self.difficulty == "easy":
             # easy mode will let the algorithm only search 2 steps further than the
             # board's side length
-            self._depth = game.get_side_length() + 1
+            self._depth = game.get_side_length()
         else:
             # hard mode will let the algorithm search 2 * the board's side length
             self._depth = game.get_side_length() * 2
@@ -355,7 +355,10 @@ class AIMinimaxPlayer(Player):
         subtrees = self._tree.get_subtrees()
         self._minimax(self._tree, game, self._depth, self._piece)
 
-        print(f"Choice:\n{[subtree.x_win_score for subtree in subtrees]}")
+        print(f"""
+            Choice:\n{[(subtree.placement, subtree.x_win_score)
+            for subtree in subtrees]}
+        """)
 
         # return the max placement or
         if self._piece == 'x':
