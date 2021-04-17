@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from typing import Optional, Any
+from typing import Optional, Any, Union
 import random
 import copy
 import game_tree as gt
@@ -275,7 +275,15 @@ class AIMinimaxPlayer(Player):
             score = self._score_node(mock_game)
             node.add_subtree(gt.GameTree(spot, not node.is_x_move, score))
 
-    def _minimax(self, tree: gt.GameTree, game: GameState, depth: int, piece: str) -> None:
+    def _minimax(
+            self,
+            tree: gt.GameTree,
+            game: GameState,
+            depth: int,
+            piece: str,
+            alpha: Union[float, int],
+            beta: Union[float, int]
+    ) -> None:
         """
         perform the minimax algorithm recursively to a given depth
         each to to the given gepth will contain a calculated minimax score as a result
@@ -298,10 +306,13 @@ class AIMinimaxPlayer(Player):
             for subtree in subtrees:
                 if subtree.placement not in game.move_history:
                     mock_game = game.copy_and_place_piece('x', subtree.placement)
-                    self._minimax(subtree, mock_game, depth - 1, 'o')
+                    self._minimax(subtree, mock_game, depth - 1, 'o', alpha, beta)
                 else:
-                    self._minimax(subtree, game, depth - 1, 'o')
+                    self._minimax(subtree, game, depth - 1, 'o', alpha, beta)
                 max_score = max(max_score, subtree.x_win_score)
+                alpha = max(alpha, subtree.x_win_score)
+                if beta <= alpha:
+                    break
             tree.x_win_score = max_score
 
         # minimizer, 'o'
@@ -315,10 +326,13 @@ class AIMinimaxPlayer(Player):
             for subtree in subtrees:
                 if subtree.placement not in game.move_history:
                     mock_game = game.copy_and_place_piece('o', subtree.placement)
-                    self._minimax(subtree, mock_game, depth - 1, 'x')
+                    self._minimax(subtree, mock_game, depth - 1, 'x', alpha, beta)
                 else:
-                    self._minimax(subtree, game, depth - 1, 'x')
+                    self._minimax(subtree, game, depth - 1, 'x', alpha, beta)
                 min_score = min(min_score, subtree.x_win_score)
+                beta = min(beta, subtree.x_win_score)
+                if beta <= alpha:
+                    break
             tree.x_win_score = min_score
 
     def return_move(self, game: GameState, prev_move: Optional[str]) -> tuple[str, str]:
@@ -353,15 +367,22 @@ class AIMinimaxPlayer(Player):
 
         # calculate the minimax score for each subtree
         subtrees = self._tree.get_subtrees()
-        self._minimax(self._tree, game, self._depth, self._piece)
+        self._minimax(
+            tree=self._tree,
+            game=game,
+            depth=self._depth,
+            piece=self._piece,
+            alpha=float("-inf"),
+            beta=float("inf")
+        )
 
-        # return the max placement or
+        # return the max score placement or min score placement based on my piece
         if self._piece == 'x':
             spot_choice = max(subtrees, key=lambda s: s.x_win_score).placement
         else:
             spot_choice = min(subtrees, key=lambda s: s.x_win_score).placement
 
-        # advance my tree after I have made my decision
+        # advance the tree after having made the placement decision
         self._tree = self._tree.find_subtree_by_spot(spot_choice)
 
         return self._piece, spot_choice
@@ -460,5 +481,5 @@ if __name__ == '__main__':
     #     'extra-imports': ['random', 'copy', 'game_tree'],
     #     'allowed-io': ['return_move'],
     #     'max-line-length': 100,
-    #     'disable': ['E1136']
+    #     'disable': ['E1136', 'R0912', 'R0913']
     # })
