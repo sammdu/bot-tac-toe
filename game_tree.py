@@ -57,7 +57,7 @@ class GameTree:
         self,
         placement: str = None,
         is_x_move: bool = True,
-        x_win_score: float = 0.0
+        x_win_score: int = 0
     ) -> None:
         """
         Initialize a new game tree.
