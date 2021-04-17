@@ -51,8 +51,14 @@ class GameState():
     """
     A class representing a Tic Tac Toe game state.
 
+    [c] This class took inspiration from CSC111 Winter 2021 Assignment 2: Trees, Chess,
+        and Artificial Intelligence (Minichess Library), by David Liu and Isaac Waller;
+        though there are very few similarities due to the different nature of this game
+
     Instance Attributes:
-        - 
+        - next_player:
+        - empty_spots:
+        - move_history:
     """
     next_player: str
     empty_spots: list[Optional[str]]
@@ -60,10 +66,9 @@ class GameState():
 
     # Private Instance Attributes:
     #   - _board: a nested list representing a tictactoe board
-    #   [-] _move_count: the number of moves that have been made in the current game
+    #   - _board_side: the side length of the board
     _board: list[list[str]]
     _board_side: int
-    # _move_count: int
 
     def __init__(
         self,

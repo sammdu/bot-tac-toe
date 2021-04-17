@@ -1,6 +1,14 @@
 """
 Manipulates the DOM inside the browser and handles user interaction.
 
+This module cannot be run with a regular CPython interpreter, because it uses
+the `browser` module provided by the Btython distribution.
+This module will be loaded by `index.html` and executed by the Brython
+interpreter `brython.js`.
+`brython_stdlib.js` provides the Python standard library for the Brython
+interpreter, and allows for imports of other modules to work.
+Learn more about Brython: https://brython.info
+
 --------------------------------------------------------------------------------
 MIT License
 
