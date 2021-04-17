@@ -51,8 +51,8 @@ class GameState():
     """
     A class representing a Tic Tac Toe game state.
 
-    [c] This class took inspiration from CSC111 Winter 2021 Assignment 2: Trees, Chess,
-        and Artificial Intelligence (Minichess Library), by David Liu and Isaac Waller;
+    [c] This class took inspiration from "CSC111 Winter 2021 Assignment 2: Trees, Chess,
+        and Artificial Intelligence (Minichess Library)", by David Liu and Isaac Waller;
         though there are very few similarities due to the different nature of this game
 
     Instance Attributes:
