@@ -39,9 +39,10 @@ class GameTree:
     piece (`is_x_move`), and the score that is maximized when 'x' is likely to win
 
     Instance Attributes:
-        - placement:
-        - is_x_move:
-        - x_win_prob:
+        - placement: the placement spot of the piece represented by this tree node
+        - is_x_move: True if this node's plecement is done by 'x', False otherwise
+        - x_win_score: the Minimax utility score that is large if 'x' is likely to win and
+          small if 'o' is likely to win
     """
     placement: Optional[str]
     is_x_move: bool
@@ -60,7 +61,7 @@ class GameTree:
             x_win_score: int = 0
     ) -> None:
         """
-        Initialize a new game tree.
+        initialize a new game tree
 
         >>> gt = GameTree()
         >>> gt.placement is None
@@ -83,7 +84,8 @@ class GameTree:
 
     def find_subtree_by_spot(self, spot: str) -> Any:
         """
-        find a particular subtree whose node is the given spot
+        find a particular subtree whose node contains the given spot
+
         this is only a depth-1 enumeration of the subtrees of the given node, and not an
         exhausive search in the entire game tree
         """
