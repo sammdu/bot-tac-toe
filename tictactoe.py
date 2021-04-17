@@ -58,9 +58,9 @@ class GameState():
         though there are very few similarities due to the different nature of this game
 
     Instance Attributes:
-        - next_player:
-        - empty_spots:
-        - move_history:
+        - next_player: the player from {'p1', 'p2'} that will place the next game piece
+        - empty_spots: a list of vacant spot on the game board available to be filled
+        - move_history: a history of moves that occured in this game
     """
     next_player: str
     empty_spots: list[Optional[str]]
@@ -188,6 +188,10 @@ class GameState():
 class Player:
     """
     An abstract class representing a Tic Tac Toe player.
+
+    [c] This class and its subclasses took inspiration from "CSC111 Winter 2021 Assignment
+        2: Trees, Chess, and Artificial Intelligence (Game Tree)", by David Liu and Isaac
+        Waller
     """
     # Private Instance Attributes:
     #   - _piece: game piece of the current player, either `x` or `o`
@@ -199,7 +203,7 @@ class Player:
 
     def return_move(self, game: GameState, prev_move: str) -> tuple[str, str]:
         """
-        return a move in the given game state
+        return the game piece {'x', 'o'} and a move in the given game state
 
         `prev_move` is the opponent player's most recent move, or `None` if no moves
         have been made
@@ -214,7 +218,8 @@ class AIRandomPlayer(Player):
 
     def return_move(self, game: GameState, prev_move: str) -> tuple[str, str]:
         """
-        return the game piece {'x', 'o'} and a move in the given game state
+        return the game piece {'x', 'o'} and a move in the given game state;
+        for this player, the move will be chosen at random from the available empty spots
 
         `prev_move` is the opponent player's most recent move, or `None` if no moves
         have been made; not used by `AIRandomPlayer`
@@ -251,6 +256,10 @@ class AIMinimaxPlayer(Player):
         """
         return a Minimax utility score based on the given game state
 
+        There is a scoring constant of '1' when 'x' wins, '-1' when 'x' loses, or '0'
+        otherwise; this constant is multiplied by the number of empty spots left in the
+        game, to incentivize victory in the fewest steps
+
         The idea of multiplying the number of empty spots with the scoring constant
         {1, -1, 0} to reward wins made in fewer steps came from this video:
             https://youtu.be/fT3YWCKvuQE
@@ -285,8 +294,10 @@ class AIMinimaxPlayer(Player):
             beta: Union[float, int]
     ) -> None:
         """
-        perform the minimax algorithm recursively to a given depth
-        each to to the given gepth will contain a calculated minimax score as a result
+        perform the minimax algorithm with Alpha-Beta pruning recursively to a given depth
+        each subtree to to the given gepth will contain a calculated minimax score as a
+        result
+        see `_score_node` for the scoring scheme
         """
         assert piece in {'x', 'o'}
 
@@ -299,29 +310,39 @@ class AIMinimaxPlayer(Player):
         elif piece == 'x':
             max_score = -1 * (game.get_side_length() ** 2) - 1
             subtrees = tree.get_subtrees()
+
             # generate subtrees if depth is not reached but no more subtrees are available
             if depth != 0 and subtrees == []:
                 self._gen_subtrees(tree, game)
+
             # iterate through each subtree, compute the sub score, and maximize
             for subtree in subtrees:
+                # if the placement recorded in teh current subtree has not been played in
+                # the game yet, create a mock game to facilitate with minimax
                 if subtree.placement not in game.move_history:
                     mock_game = game.copy_and_place_piece('x', subtree.placement)
                     self._minimax(subtree, mock_game, depth - 1, 'o', alpha, beta)
+                # if the placement has been played alraedy, directly recurse
                 else:
                     self._minimax(subtree, game, depth - 1, 'o', alpha, beta)
+
                 max_score = max(max_score, subtree.x_win_score)
+                # update the alpha score, and prune if possible
                 alpha = max(alpha, subtree.x_win_score)
                 if beta <= alpha:
                     break
+
             tree.x_win_score = max_score
 
         # minimizer, 'o'
         else:
             min_score = 1 * (game.get_side_length() ** 2) + 1
             subtrees = tree.get_subtrees()
+
             # generate subtrees if depth is not reached but no more subtrees are available
             if depth != 0 and subtrees == []:
                 self._gen_subtrees(tree, game)
+
             # iterate through each subtree, compute the sub score, and minimize
             for subtree in subtrees:
                 if subtree.placement not in game.move_history:
@@ -329,10 +350,13 @@ class AIMinimaxPlayer(Player):
                     self._minimax(subtree, mock_game, depth - 1, 'x', alpha, beta)
                 else:
                     self._minimax(subtree, game, depth - 1, 'x', alpha, beta)
+
                 min_score = min(min_score, subtree.x_win_score)
+                # update the beta score, and prune if possible
                 beta = min(beta, subtree.x_win_score)
                 if beta <= alpha:
                     break
+
             tree.x_win_score = min_score
 
     def return_move(self, game: GameState, prev_move: Optional[str]) -> tuple[str, str]:
@@ -341,16 +365,18 @@ class AIMinimaxPlayer(Player):
         algorithm
 
         `prev_move` is the opponent player's most recent move, or `None` if no moves
-        have been made; not used by `AIRandomPlayer`
+        have been made
         """
         # set the search depth
         if self.difficulty == "easy":
-            # easy mode will let the algorithm only search 2 steps further than the
-            # board's side length
-            self._depth = game.get_side_length()
+            # easy mode will let the algorithm only search 3 steps ahead
+            self._depth = 3
         else:
-            # hard mode will let the algorithm search 2 * the board's side length
-            self._depth = game.get_side_length() + 1
+            # hard mode depends onthe board side length, due to computational complexity
+            # side length to search depth mapping recorded in `depthmap`
+            side = game.get_side_length()
+            depthmap = {3: 5, 4: 4, 5: 3}
+            self._depth = depthmap[side]
 
         if prev_move is None:
             for spot in game.empty_spots:
@@ -445,28 +471,6 @@ def init_game(
     game.next_player = start_first
 
     return game, player1, player2
-
-
-# g, p1, p2 = init_game(
-#     board_side=3,
-#     p1_piece='x',
-#     start_first='p1',
-#     p2_role="ai_hard",
-#     p1_role='human'
-# )
-#
-# g._board
-# g.move_history
-# g.next_player
-# g.empty_spots
-#
-# g.place_piece('x', '00')
-#
-# p2._piece
-# p2.is_x
-# p2.difficulty
-#
-# p2.return_move(g, None)
 
 
 if __name__ == '__main__':

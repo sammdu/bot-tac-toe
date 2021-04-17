@@ -165,7 +165,7 @@ def ev_board_size(event: DOMEvent) -> None:
             b.attrs["style"] = f"background-color: {ThemeColor.unsel};"
 
     # bind cell functions for each cell
-    bind_cells()
+    # bind_cells()
 
     # log the change in the broswer console
     print(f"Changed board side length to: {new_side_len}")
@@ -409,6 +409,8 @@ def ev_start_game(event: DOMEvent) -> None:
     """
     start the game by calling the initializer and calling the first round
     """
+    print("Game started.")
+
     # global GAME_OBJS
     game, p1, p2 = ttt.init_game(
         Config.BOARD_SIDE_LENGTH,
