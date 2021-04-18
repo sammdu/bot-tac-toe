@@ -19,9 +19,11 @@ body
     padding: 0;
     margin: 0;
 
-    font-family: 'HKGroteskMedium', 'HKGroteskRegular', 'HK Grotesk', 'Roboto', 'Ubuntu', sans-serif;
-    font-display: fallback;
+    font-family: 'HKGroteskMedium', 'HKGroteskRegular', 'HK Grotesk',
+                 'Segoe UI', 'SF Pro', 'Roboto', 'Ubuntu', sans-serif;
+    font-display: swap;
     font-size: 1.2em;
+    color: #22263f;
 
     display: flex;
     flex-direction: column;
