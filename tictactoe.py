@@ -370,7 +370,7 @@ class AIMinimaxPlayer(Player):
         # set the search depth
         if self.difficulty == "easy":
             # easy mode will let the algorithm only search 3 steps ahead
-            self._depth = 3
+            self._depth = 2
         else:
             # hard mode depends onthe board side length, due to computational complexity
             # side length to search depth mapping recorded in `depthmap`
