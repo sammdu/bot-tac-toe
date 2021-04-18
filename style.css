@@ -12,11 +12,11 @@
 
 @font-face {
     font-family: 'TTTPiece';
-    src: url('TTTPiece.eot?r8pxat');
-    src: url('TTTPiece.eot?r8pxat#iefix') format('embedded-opentype'),
-         url('TTTPiece.ttf?r8pxat') format('truetype'),
-         url('TTTPiece.woff?r8pxat') format('woff'),
-         url('TTTPiece.svg?r8pxat#TTTPiece') format('svg');
+    src: url('fonts/TTTPiece.eot?r8pxat');
+    src: url('fonts/TTTPiece.eot?r8pxat#iefix') format('embedded-opentype'),
+         url('fonts/TTTPiece.ttf?r8pxat') format('truetype'),
+         url('fonts/TTTPiece.woff?r8pxat') format('woff'),
+         url('fonts/TTTPiece.svg?r8pxat#TTTPiece') format('svg');
     font-weight: normal;
     font-style: normal;
 }
