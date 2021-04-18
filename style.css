@@ -19,7 +19,8 @@ body
     padding: 0;
     margin: 0;
 
-    font-family: 'HK Grotesk', 'Roboto', 'Ubuntu', sans-serif;
+    font-family: 'HKGroteskRegular', 'HKGroteskMedium', 'HK Grotesk', 'Roboto', 'Ubuntu', sans-serif;
+    font-display: fallback;
     font-size: 1.2em;
 
     display: flex;
