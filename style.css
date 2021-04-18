@@ -1,4 +1,15 @@
 @font-face {
+    font-family: 'HKGroteskMedium';
+    src: url('fonts/HKGrotesk-Medium.eot?#iefix');
+    src: url('fonts/HKGrotesk-Medium.woff2') format('woff2'),
+         url('fonts/HKGrotesk-Medium.woff') format('woff'),
+         url('fonts/HKGrotesk-Medium.ttf') format('truetype');
+    font-display: swap;
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
     font-family: 'TTTPiece';
     src:  url('TTTPiece.eot?r8pxat');
     src:  url('TTTPiece.eot?r8pxat#iefix') format('embedded-opentype'),
@@ -9,7 +20,8 @@
     font-style: normal;
 }
 
-html{
+html
+{
     height: 100%
 }
 
@@ -19,9 +31,8 @@ body
     padding: 0;
     margin: 0;
 
-    font-family: 'HKGroteskMedium', 'HKGroteskRegular', 'HK Grotesk',
+    font-family: 'HKGroteskMedium', 'HK Grotesk',
                  'Segoe UI', 'SF Pro', 'Roboto', 'Ubuntu', sans-serif;
-    font-display: swap;
     font-size: 1.2em;
     color: #22263f;
 
