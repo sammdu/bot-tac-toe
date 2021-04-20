@@ -328,12 +328,18 @@ footer
     background-color: #385aa7;
     color: #fff;
 
+    font-size: 0.85em;
     text-align: center;
     padding: 1em;
 
     flex-grow: 0;
     flex-shrink: 0;
 }
+@media screen and (max-width: 900px)
+{
+    footer{font-size: 0.75em;}
+}
+
 
 footer h3
 {
@@ -359,7 +365,7 @@ a.link_footer:visited
     color: inherit;
 
     /* add background wipe transition effect */
-    background: linear-gradient(to left, #385aa7 50.5%, #fff 50%) right;
+    background: linear-gradient(to left, #385aa7 50%, #fff 50%) right;
     background-size: 200%;
     transition: 0.2s ease;
 }
