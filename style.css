@@ -267,6 +267,11 @@ button.btn-sq
 {
     padding: 0.5em 0.8em;
 }
+button#btn_start,
+button#btn_reset
+{
+    font-size: 1.2em;
+}
 button.btn-rad
 {
     width: 2.1em;
