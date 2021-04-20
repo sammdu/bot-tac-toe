@@ -114,7 +114,7 @@ section
 
 .board-area .game-start-stop
 {
-    margin-top: 1em;
+    margin: 1em 0 1em 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -244,8 +244,8 @@ button
 }
 button:hover
 {
-    -webkit-box-shadow: 0 0.1em 0.3em 0 rgba(26,26,26,0.5);
-    box-shadow: 0 0.1em 0.3em 0 rgba(26,26,26,0.5);
+    -webkit-box-shadow: 0 0.1em 0.3em 0 rgba(26,26,26,0.3);
+    box-shadow: 0 0.1em 0.3em 0 rgba(26,26,26,0.3);
     transform: scale(1.05);
 
 }
@@ -271,6 +271,7 @@ button#btn_start,
 button#btn_reset
 {
     font-size: 1.2em;
+    margin: 0;
 }
 button.btn-rad
 {
@@ -292,7 +293,7 @@ button.btn-piece:hover
 {
     -webkit-box-shadow: none;
     box-shadow: none;
-    text-shadow: 0 0.05em 0.1em rgba(26,26,26,0.5);
+    text-shadow: 0 0.05em 0.1em rgba(26,26,26,0.3);
 }
 button.btn-piece:active
 {
@@ -342,7 +343,7 @@ footer
 }
 @media screen and (max-width: 900px)
 {
-    footer{font-size: 0.75em;}
+    footer{font-size: 0.7em;}
 }
 
 
@@ -350,6 +351,7 @@ footer h3
 {
     font-weight: bold;
     font-size: 1.5em;
+    margin-bottom: 0.3em;
 }
 
 footer h4
@@ -360,7 +362,7 @@ footer h4
 
 footer a
 {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 a.link_footer:link,
@@ -368,16 +370,10 @@ a.link_footer:visited
 {
     text-decoration: underline;
     color: inherit;
-
-    /* add background wipe transition effect */
-    background: linear-gradient(to left, #385aa7 50%, #fff 50%) right;
-    background-size: 200%;
-    transition: 0.2s ease;
 }
 
 a.link_footer:hover,
 a.link_footer:active
 {
-    background-position: left;
-    color: #385aa7;
+    text-decoration: none;
 }
