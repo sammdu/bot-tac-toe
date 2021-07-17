@@ -23,12 +23,12 @@
 
 html
 {
-    height: 100%
+    min-height: 100%;
 }
 
 body
 {
-    height: 100%;
+    min-height: 100%;
     padding: 0;
     margin: 0;
 
@@ -36,11 +36,6 @@ body
                  'Segoe UI', 'SF Pro', 'Roboto', 'Ubuntu', sans-serif;
     font-size: 1.2em;
     color: #22263f;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
 }
 @media screen and (min-width: 1500px)
 {
@@ -49,10 +44,8 @@ body
 
 main
 {
-    overflow: scroll;
+    min-height: 90%;
     padding: 1em;
-
-    flex: 3 1 auto;
 
     display: flex;
     flex-direction: column;
@@ -331,15 +324,12 @@ aside select:hover
 
 footer
 {
+    min-height: 10%;
     background-color: #385aa7;
     color: #fff;
-
     font-size: 0.85em;
     text-align: center;
     padding: 1em;
-
-    flex-grow: 0;
-    flex-shrink: 0;
 }
 @media screen and (max-width: 900px)
 {
