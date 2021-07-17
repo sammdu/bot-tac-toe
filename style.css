@@ -44,7 +44,8 @@ body
 
 main
 {
-    min-height: 90%;
+    /* min-height: 90%; */
+    min-height: 90vh;
     padding: 1em;
 
     display: flex;
@@ -324,7 +325,8 @@ aside select:hover
 
 footer
 {
-    min-height: 10%;
+    /* min-height: 10%; */
+    min-height: 10vh;
     background-color: #385aa7;
     color: #fff;
     font-size: 0.85em;
