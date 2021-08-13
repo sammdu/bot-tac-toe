@@ -402,7 +402,7 @@ def ai_move_if_not_won(game: ttt.GameState) -> None:
         player_next = Config.GAME_OBJS[game.next_player]
         if player_next != "human":
             # obtain the player's move, place the game piece, and draw it on the UI
-            # ai_make_move(player_next, game, game.move_history[-1])
+            dom['game_status'].text = dom['game_status'].text + ".."
             timer.set_timeout(ai_make_move, 0, player_next, game, game.move_history[-1])
 
         # check for winners again
@@ -426,7 +426,7 @@ def ev_game_round(event: DOMEvent) -> None:
     # when we start a fresh game and AI starts first
     if target.attrs['name'] == "start" and player != "human":
         # obtain the player's move, place the game piece, and draw it on the UI
-        # ai_make_move(player, game, None)
+        dom['game_status'].text = dom['game_status'].text + ".."
         timer.set_timeout(ai_make_move, 0, player, game, None)
 
     # when getting called by a human player, place the piece for the human
