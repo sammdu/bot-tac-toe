@@ -79,7 +79,8 @@ header
 header h1
 {
     font-size: 3em;
-    font-weight: bolder;
+    font-weight: bold;
+    font-weight: 900;
 }
 
 section

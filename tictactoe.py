@@ -35,7 +35,7 @@ import game_tree as gt
 # Tic Tac Toe game representation
 ################################################################################
 
-def empty_board(side: int) -> None:
+def empty_board(side: int) -> list:
     """
     generate an empty game board (list of lists) with sidelength `side`
 
@@ -476,14 +476,3 @@ def init_game(
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
-    # import python_ta.contracts
-    # python_ta.contracts.check_all_contracts()
-    #
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'extra-imports': ['random', 'copy', 'game_tree'],
-    #     'allowed-io': ['return_move'],
-    #     'max-line-length': 100,
-    #     'disable': ['E1136', 'R0912', 'R0913']
-    # })

@@ -33,7 +33,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from browser import document as dom
-from browser import html, DOMEvent, window
+from browser import html, DOMEvent, window, timer
 import tictactoe as ttt
 
 
@@ -77,6 +77,7 @@ class Config:
     PLAYER_1_COLOR: str = ThemeColor.purple
     PLAYER_2_COLOR: str = ThemeColor.green
     GAME_OBJS: dict = {}
+    WIN_STATUS: bool = False
 
 
 def draw_board(table: html.TABLE, side: int) -> None:
@@ -314,7 +315,7 @@ def cell_click(event: DOMEvent) -> None:
         target.attrs["style"] = f"color: {Config.PLAYER_2_COLOR};"
 
     # trigger a round of game
-    ev_game_round(event)
+    timer.set_timeout(ev_game_round, 0, event)
 
 
 def draw_piece(piece: str, spot: str):
@@ -337,11 +338,12 @@ def draw_piece(piece: str, spot: str):
                 c.attrs["style"] = f"color: {Config.PLAYER_2_COLOR};"
 
 
-def check_winner(game: ttt.GameState) -> bool:
+def check_winner(game: ttt.GameState):
     """
     given the game state, check for winners;
-    if a winner is found, announce it to the game status and return `True`;
-    otherwise prompt the next player to play, and return `False`
+    if a winner is found, announce it to the game status and set Config.WIN_STATUS to
+    `True`;
+    otherwise prompt the next player to play
     """
     # check for winners
     if winning_piece := game.get_winning_piece():
@@ -372,7 +374,7 @@ def check_winner(game: ttt.GameState) -> bool:
         # log the winner in the browser console
         print(announce_txt)
 
-        return True
+        Config.WIN_STATUS = True
 
     # if no winners, announce the next player's turn
     else:
@@ -381,7 +383,30 @@ def check_winner(game: ttt.GameState) -> bool:
             Player {game.next_player[-1]}'s turn.
         """
 
-        return False
+
+def ai_make_move(player: ttt.Player, game: ttt.GameState, prev_move: str) -> None:
+    """
+    helper function to obtain the player's move, place the game piece, and draw it on the
+    UI
+    """
+    piece, spot = player.return_move(game, prev_move)
+    game.place_piece(piece, spot)
+    draw_piece(piece, spot)
+
+
+def ai_move_if_not_won(game: ttt.GameState) -> None:
+    """
+    schedule the next AI move if the game is not won and the next player is not human
+    """
+    if not Config.WIN_STATUS:
+        player_next = Config.GAME_OBJS[game.next_player]
+        if player_next != "human":
+            # obtain the player's move, place the game piece, and draw it on the UI
+            # ai_make_move(player_next, game, game.move_history[-1])
+            timer.set_timeout(ai_make_move, 0, player_next, game, game.move_history[-1])
+
+        # check for winners again
+        timer.set_timeout(check_winner, 0, game)
 
 
 def ev_game_round(event: DOMEvent) -> None:
@@ -395,12 +420,14 @@ def ev_game_round(event: DOMEvent) -> None:
     game = Config.GAME_OBJS["game"]
     player = Config.GAME_OBJS[game.next_player]
 
+    # use the check winner function to show which player's turn it is
+    check_winner(game)
+
     # when we start a fresh game and AI starts first
     if target.attrs['name'] == "start" and player != "human":
         # obtain the player's move, place the game piece, and draw it on the UI
-        piece, spot = player.return_move(game, None)
-        game.place_piece(piece, spot)
-        draw_piece(piece, spot)
+        # ai_make_move(player, game, None)
+        timer.set_timeout(ai_make_move, 0, player, game, None)
 
     # when getting called by a human player, place the piece for the human
     elif "cell" in target.classList:
@@ -411,20 +438,11 @@ def ev_game_round(event: DOMEvent) -> None:
             piece = ttt.piece_not(Config.PLAYER_1_PIECE)
         game.place_piece(piece, spot)
 
-    # check for winners; exit the function if a winner is found
-    if check_winner(game):
-        return
+    # check for winners and announce who's turn
+    timer.set_timeout(check_winner, 0, game)
 
-    # make the next move if the next player is not human
-    player_next = Config.GAME_OBJS[game.next_player]
-    if player_next != "human":
-        # obtain the player's move, place the game piece, and draw it on the UI
-        piece, spot = player_next.return_move(game, game.move_history[-1])
-        game.place_piece(piece, spot)
-        draw_piece(piece, spot)
-
-    # check for winners again
-    check_winner(game)
+    # make the next move if the game is not won and the next player is not human
+    timer.set_timeout(ai_move_if_not_won, 0, game)
 
 
 def ev_start_game(event: DOMEvent) -> None:
@@ -456,6 +474,7 @@ def ev_start_game(event: DOMEvent) -> None:
     dom["btn_reset"].attrs["style"] = ""
 
     # trigger the first round in the game
+    # timer.set_timeout(ev_game_round, 0, event)
     ev_game_round(event)
 
 
@@ -467,28 +486,6 @@ def ev_reset_game(event) -> None:
 
 
 if __name__ == '__main__':
-    # no doctests in this module :)
-
-    # import python_ta.contracts
-    # python_ta.contracts.check_all_contracts()
-
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'extra-imports': ['browser', 'tictactoe'],
-    #     'allowed-io': [
-    #         'ev_board_size',
-    #         'ev_win_step',
-    #         'ev_player1_piece',
-    #         'ev_who_starts_first',
-    #         'ev_player_2_role',
-    #         'cell_click',
-    #         'check_winner',
-    #         'ev_start_game'
-    #     ],
-    #     'max-line-length': 100,
-    #     'disable': ['E1136', 'R0912', 'R0913']
-    # })
-
     # just for testing ;)
     print("https://sammdu.com")
 
@@ -498,7 +495,7 @@ if __name__ == '__main__':
     # indicate that the game is ready
     dom['game_status'].html = """
     Please select your options,
-    <span style="display: inline-block;">and start the game below!</span>
+    <span style="display: inline-block;">and click "Start" to begin!</span>
     """
 
     # enforce a deafult value for the player 2 role select menu
