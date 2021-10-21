@@ -6,4 +6,4 @@ Bot-Tac-Toe | AI Supercharged Tic Tac Toe Game
 
 <br>
 
-![Screenshot](screenshot.png)
+![Screenshot](assets/screenshot.png)

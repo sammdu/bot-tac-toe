@@ -1,2 +1,4 @@
 __pycache__/
 pyta_report.html
+.mypy_cache/
+.config/
