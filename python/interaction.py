@@ -34,7 +34,7 @@ SOFTWARE.
 """
 from browser import document as dom
 from browser import html, DOMEvent, window, timer
-import tictactoe as ttt
+import python.tictactoe as ttt
 
 
 class ThemeColor:
