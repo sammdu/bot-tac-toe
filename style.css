@@ -50,7 +50,7 @@ main
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: stretch;
 }
 
@@ -63,17 +63,9 @@ main
 header
 {
     min-height: 0;
-    margin: 1em 0;
+    margin: 1em 0 1.5em 1em;
 
     flex: 0 0;
-}
-@media screen and (min-width: 1024px)
-{
-    header{margin-left: 10vw;}
-}
-@media screen and (min-width: 1500px)
-{
-    header{margin-left: 14vw;}
 }
 
 header h1
@@ -109,7 +101,7 @@ section
 
 .board-area .game-start-stop
 {
-    margin: 1em 0 1em 0;
+    margin: 1em 0 2em 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -265,9 +257,11 @@ button.btn-sq
 button#btn_start,
 button#btn_reset
 {
-    font-size: 1.2em;
+    font-size: 1em;
     margin: 0;
 }
+#btn_start {background-color: #1ea382;}
+#btn_reset {background-color: #f4a83e;}
 button.btn-rad
 {
     width: 2.1em;
