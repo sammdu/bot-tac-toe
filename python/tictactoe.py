@@ -28,7 +28,7 @@ from __future__ import annotations
 from typing import Optional, Any, Union
 import random
 import copy
-import python.game_tree as gt
+import game_tree as gt
 
 
 ################################################################################
