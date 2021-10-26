@@ -498,6 +498,9 @@ if __name__ == '__main__':
     <span style="display: inline-block;">and click "Start" to begin!</span>
     """
 
+    # show the start button once game has loaded
+    dom["btn_start"].attrs["style"] = ""
+
     # enforce a deafult value for the player 2 role select menu
     dom["player_2_role"].value = Config.PLAYER_2_ROLE
 
