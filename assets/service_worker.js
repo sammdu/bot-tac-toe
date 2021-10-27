@@ -1,6 +1,6 @@
 var PWA_CACHE = 'pwa_cache_01';
 var urls_to_cache = [
-    '/bot-tac-toe',
+    '/bot-tac-toe/',
     '/bot-tac-toe/assets/minireset.min.css',
     '/bot-tac-toe/style.css',
     '/bot-tac-toe/assets/brython/brython.js',
