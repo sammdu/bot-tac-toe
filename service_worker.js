@@ -29,6 +29,17 @@ self.addEventListener("install", function(event) {
 
 self.addEventListener("activate", function(event) {
     console.log("WORKER: activate event in progress.");
+    event.waitUntil(
+        (async function() {
+            // Enable navigation preload if it's supported.
+            // See https://developers.google.com/web/updates/2017/02/navigation-preload
+            if ("navigationPreload" in self.registration) {
+                await self.registration.navigationPreload.enable();
+            }
+        })()
+    );
+    // Tell the active service worker to take control of the page immediately.
+    self.clients.claim();
 });
 
 self.addEventListener("fetch", function(event) {
