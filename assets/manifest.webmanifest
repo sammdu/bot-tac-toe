@@ -5,7 +5,8 @@
         {
             "src": "/bot-tac-toe/assets/icons/favicon.svg",
             "type": "image/svg+xml",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "any maskable"
         },
         {
             "src": "/bot-tac-toe/assets/icons/favicon_180.png",
@@ -16,6 +17,11 @@
             "src": "/bot-tac-toe/assets/icons/favicon_196.png",
             "type": "image/png",
             "sizes": "196x196"
+        },
+        {
+            "src": "/bot-tac-toe/assets/icons/favicon_512.png",
+            "type": "image/png",
+            "sizes": "512x512"
         }
     ],
     "start_url": "/bot-tac-toe/",
