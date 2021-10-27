@@ -28,7 +28,7 @@
     "start_url": "/bot-tac-toe/",
     "background_color": "#ffffff",
     "display": "standalone",
-    "scope": "/bot-tac-toe/",
+    "scope": ".",
     "theme_color": "#22263f",
     "description": "Tic-tac-toe game where you can specify the size of the game board and play against an AI of varying difficulty",
     "lang": "en-US"
