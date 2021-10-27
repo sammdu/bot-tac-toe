@@ -1,13 +1,13 @@
 var PWA_CACHE = 'pwa_cache_01';
 var urls_to_cache = [
     '/bot-tac-toe/',
+    '/bot-tac-toe/manifest.webmanifest',
     '/bot-tac-toe/assets/minireset.min.css',
     '/bot-tac-toe/style.css',
     '/bot-tac-toe/assets/brython/brython.js',
     '/bot-tac-toe/assets/brython/brython_modules.js',
     '/bot-tac-toe/assets/fonts/HKGrotesk-Medium.woff2',
     '/bot-tac-toe/assets/fonts/TTTPiece.ttf?r8pxat',
-    '/bot-tac-toe/assets/manifest.webmanifest',
     '/bot-tac-toe/assets/icons/icon_dropdown.svg',
     '/bot-tac-toe/assets/icons/favicon.svg',
     '/bot-tac-toe/assets/icons/favicon_180.png',
